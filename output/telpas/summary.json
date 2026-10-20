@@ -1,0 +1,105 @@
+{
+  "total": {
+    "n": 62,
+    "exact": 18,
+    "withinOne": 29,
+    "higher": 28,
+    "lower": 16,
+    "bias": 0.8064516129032258,
+    "mae": 1.7419354838709677
+  },
+  "traits": {
+    "vocabulary": {
+      "n": 62,
+      "exact": 29,
+      "withinOne": 56,
+      "higher": 21,
+      "lower": 12,
+      "bias": 0.20967741935483872,
+      "mae": 0.6290322580645161
+    },
+    "usage": {
+      "n": 62,
+      "exact": 31,
+      "withinOne": 57,
+      "higher": 23,
+      "lower": 8,
+      "bias": 0.3225806451612903,
+      "mae": 0.5806451612903226
+    },
+    "completeness": {
+      "n": 62,
+      "exact": 30,
+      "withinOne": 57,
+      "higher": 22,
+      "lower": 10,
+      "bias": 0.27419354838709675,
+      "mae": 0.5967741935483871
+    }
+  },
+  "questions": {
+    "18": {
+      "n": 31,
+      "exact": 9,
+      "withinOne": 14,
+      "higher": 16,
+      "lower": 6,
+      "bias": 1.3225806451612903,
+      "mae": 1.967741935483871
+    },
+    "28": {
+      "n": 31,
+      "exact": 9,
+      "withinOne": 15,
+      "higher": 12,
+      "lower": 10,
+      "bias": 0.2903225806451613,
+      "mae": 1.5161290322580645
+    }
+  },
+  "errors": 0,
+  "officialMean": 8.225806451612904,
+  "modelMean": 9.03225806451613,
+  "byOfficialTotal": {
+    "3": {
+      "n": 4,
+      "modelMean": 6.25
+    },
+    "4": {
+      "n": 4,
+      "modelMean": 7.25
+    },
+    "5": {
+      "n": 4,
+      "modelMean": 8.25
+    },
+    "6": {
+      "n": 6,
+      "modelMean": 8.666666666666666
+    },
+    "7": {
+      "n": 6,
+      "modelMean": 9.166666666666666
+    },
+    "8": {
+      "n": 6,
+      "modelMean": 9.333333333333334
+    },
+    "9": {
+      "n": 8,
+      "modelMean": 9.125
+    },
+    "10": {
+      "n": 8,
+      "modelMean": 9.625
+    },
+    "11": {
+      "n": 8,
+      "modelMean": 9.5
+    },
+    "12": {
+      "n": 8,
+      "modelMean": 10.5
+    }
+  }
+}

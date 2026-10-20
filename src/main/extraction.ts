@@ -1,10 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { PDFParse } from 'pdf-parse'
-import { parseStudentText, type ParsedStudentText } from '../shared/parseStudentText'
+import { parseStudentPages, type ParsedStudentText } from '../shared/parseStudentText'
 
 export interface ExtractedStudentPage extends ParsedStudentText {
   rawText: string
   pageNumber: number
+  pageEndNumber: number
 }
 
 export async function extractStudentPdf(path: string): Promise<ExtractedStudentPage[]> {
@@ -12,12 +13,7 @@ export async function extractStudentPdf(path: string): Promise<ExtractedStudentP
   const parser = new PDFParse({ data })
   try {
     const result = await parser.getText()
-    return result.pages
-      .map((page) => {
-        const rawText = page.text.trim()
-        return { ...parseStudentText(rawText), rawText, pageNumber: page.num }
-      })
-      .filter((page) => page.rawText || page.responseText)
+    return parseStudentPages(result.pages)
   } finally {
     await parser.destroy()
   }

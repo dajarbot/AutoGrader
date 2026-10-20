@@ -16,7 +16,8 @@ const footerPatterns = [
 
 export function parseStudentText(fullText: string): ParsedStudentText {
   const lines = String(fullText || '').replace(/\r/g, '').split('\n')
-  const identity = parseIdentity(lines.slice(0, 30))
+  const markerIndex = lines.findIndex((line) => /^\s*student\s+response\b/i.test(line))
+  const identity = parseIdentity(lines.slice(0, Math.min(30, markerIndex < 0 ? 30 : markerIndex)))
   let responseLines: string[] = []
   let foundResponseMarker = false
 
@@ -83,4 +84,66 @@ function cleanResponse(input: string[]): string {
   while (lines.length && footerPatterns.some((pattern) => pattern.test(lines.at(-1)!.trim()))) lines.pop()
 
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+}
+
+export interface ParsedStudentPages extends ParsedStudentText {
+  rawText: string
+  pageNumber: number
+  pageEndNumber: number
+}
+
+// Strip report furniture per page, before joining: otherwise the first copyright
+// footer would discard the rest of a student's multi-page response.
+function cleanPage(text: string): string {
+  return text.split('\n').filter((line) =>
+    !footerPatterns.some((pattern) => pattern.test(line.trim())) &&
+    !/^page\s+\d+\s+of\s+\d+\b/i.test(line.trim()) &&
+    !/^\s*(?:©|copyright\b)/i.test(line)
+  ).join('\n').trim()
+}
+
+export function parseStudentPages(pages: Array<{ text: string; num: number }>): ParsedStudentPages[] {
+  const groups: Array<{ texts: string[]; raw: string[]; start: number; end: number; name: string | null; id: string | null }> = []
+  for (const page of pages) {
+    const cleaned = cleanPage(page.text)
+    if (!cleaned) {
+      const previous = groups.at(-1)
+      if (previous) { previous.end = page.num; previous.raw.push(page.text) }
+      continue
+    }
+    // Identity belongs to the header, not quoted content in the response.
+    const header = cleaned.split('\n').slice(0, 5)
+    const boundary = header.findIndex((line) => /^\s*(?:student\s+response|CR Item\s*#)/i.test(line))
+    const identity = parseIdentity(boundary < 0 ? header : header.slice(0, boundary))
+    const previous = groups.at(-1)
+    const hasIdentity = Boolean(identity.studentName || identity.studentId)
+    const sameStudent = previous && (identity.studentId
+      ? identity.studentId === previous.id
+      : identity.studentName === previous.name)
+    if (!previous || (hasIdentity && !sameStudent)) {
+      groups.push({ texts: [cleaned], raw: [page.text], start: page.num, end: page.num,
+        name: identity.studentName, id: identity.studentId })
+    } else {
+      // Repeated headers on continuation pages are not student writing.
+      const continuation = cleaned.split('\n').filter((line, index) =>
+        !(hasIdentity && index < 5 && isIdentityLine(line)) &&
+        !/^\s*CR Item\s*#.*Possible Points:/i.test(line) &&
+        !/^\s*student\s+response\s*:?\s*$/i.test(line)
+      ).join('\n')
+      // Keep the first response marker even when it is on a later page.
+      const alreadyStarted = previous.texts.some((text) => /^\s*student\s+response\s*:?.*$/im.test(text))
+      previous.texts.push(alreadyStarted ? continuation : cleaned)
+      previous.raw.push(page.text)
+      previous.end = page.num
+    }
+  }
+  return groups.map((group) => {
+    const parsed = parseStudentText(group.texts.join('\n\n'))
+    // Never interpret an item heading as an answer when the marker is absent.
+    if (!parsed.foundResponseMarker) {
+      parsed.responseText = parsed.responseText.split('\n').filter((line) => !/^\s*CR Item\s*#.*Possible Points:/i.test(line)).join('\n').trim()
+      if (!parsed.responseText && !parsed.issues.includes('No student response text was extracted.')) parsed.issues.push('No student response text was extracted.')
+    }
+    return { ...parsed, rawText: group.raw.join('\n\n'), pageNumber: group.start, pageEndNumber: group.end }
+  })
 }

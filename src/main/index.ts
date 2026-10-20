@@ -52,7 +52,7 @@ function createWindow(): void {
 async function startLocalService(): Promise<void> {
   database = new AutoGraderDatabase(join(app.getPath('userData'), 'autograder.sqlite'))
   const providerStore = new ProviderStore(join(app.getPath('userData'), 'secure', 'grading-provider.json'))
-  const gradingWorker = new GradingWorker(database, providerStore)
+  const gradingWorker = new GradingWorker(database)
   const token = randomBytes(32).toString('hex')
   service = createServer(
     database,

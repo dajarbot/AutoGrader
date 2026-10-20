@@ -4,6 +4,7 @@ import { copyFile, mkdir, open } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import Fastify, { type FastifyInstance } from 'fastify'
 import { z } from 'zod'
+import { rubricDraftSchema } from '../shared/rubricSchema'
 import type { ExtractionBatchResult, ImportPdfResult } from '../shared/contracts'
 import type { AutoGraderDatabase } from './database'
 import { extractStudentPdf, renderPdfPage } from './extraction'
@@ -29,8 +30,7 @@ const reviewExtractionSchema = z.object({
 })
 
 const providerSchema = z.object({
-  model: z.enum(['gemini-3.8-flash', 'gemini-3.5-flash-lite']),
-  apiKey: z.string().trim().min(10).max(500).optional()
+  model: z.string().trim().min(1).max(200)
 })
 
 const scoreReviewSchema = z.object({
@@ -67,12 +67,28 @@ export function createServer(
   app.get('/health', async () => ({ status: 'ok' }))
   app.get('/api/dashboard', async () => database.dashboard())
   app.get('/api/templates', async () => database.listTemplates())
+  app.post('/api/templates', async (request, reply) => {
+    const parsed = z.object({ sourceId: z.uuid().optional(), newVersion: z.boolean().optional() }).safeParse(request.body)
+    if (!parsed.success) return reply.code(400).send({ error: 'Invalid rubric source.' })
+    try { return reply.code(201).send(database.createRubricDraft(parsed.data)) }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : 'Could not create rubric.' }) }
+  })
+  app.put('/api/templates/:id', async (request, reply) => {
+    const parsed = rubricDraftSchema.safeParse(request.body)
+    if (!parsed.success) return reply.code(400).send({ error: 'Invalid rubric. Use up to 20 criteria, scores from 0 to 20, and descriptors up to 4,000 characters.' })
+    try { return database.saveRubricDraft((request.params as { id: string }).id, parsed.data) }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : 'Could not save rubric.' }) }
+  })
+  app.post('/api/templates/:id/publish', async (request, reply) => {
+    try { return database.publishRubricDraft((request.params as { id: string }).id) }
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : 'Could not publish rubric.' }) }
+  })
   app.get('/api/assignments', async () => database.listAssignments())
   app.get('/api/provider', async () => providerStore.status())
 
   app.put('/api/provider', async (request, reply) => {
     const parsed = providerSchema.safeParse(request.body)
-    if (!parsed.success) return reply.code(400).send({ error: 'Choose a supported model and enter a valid API key.' })
+    if (!parsed.success) return reply.code(400).send({ error: 'Choose an installed Ollama model.' })
     try {
       const status = await providerStore.save(parsed.data)
       return status
@@ -167,7 +183,7 @@ export function createServer(
       const isLegacyCombinedExtraction = submission.status === 'ready' && submission.pageNumber === null
       if (!needsExtraction && !isLegacyCombinedExtraction) continue
       const group = sourceGroups.get(submission.sourceDocumentHash) ?? []
-      if (group.some((item) => item.status === 'ready' && item.pageNumber !== null)) continue
+      if (group.some((item) => !['imported', 'extracted', 'extraction_problem'].includes(item.status))) continue
       const current = candidateGroups.get(submission.sourceDocumentHash)
       if (!current || submission.studentIndex < current.studentIndex) {
         candidateGroups.set(submission.sourceDocumentHash, submission)
@@ -198,11 +214,20 @@ export function createServer(
     return database.gradingQueueSummary(id)
   })
 
+  app.put('/api/assignments/:id/grading/rubric', async (request, reply) => {
+    const { id } = request.params as { id: string }
+    if (!database.getAssignment(id)) return reply.code(404).send({ error: 'Assignment not found.' })
+    const parsed = z.object({ templateVersionId: z.uuid() }).safeParse(request.body)
+    if (!parsed.success) return reply.code(400).send({ error: 'Choose a published rubric version.' })
+    try { return database.selectGradingRubric(id, parsed.data.templateVersionId) }
+    catch (error) { return reply.code(409).send({ error: error instanceof Error ? error.message : 'Could not change rubric.' }) }
+  })
+
   app.post('/api/assignments/:id/grading/start', async (request, reply) => {
     const { id } = request.params as { id: string }
     if (!database.getAssignment(id)) return reply.code(404).send({ error: 'Assignment not found.' })
     const provider = await providerStore.status()
-    if (!provider.configured) return reply.code(409).send({ error: 'Save a Gemini API key before starting grading.' })
+    if (!provider.configured) return reply.code(409).send({ error: 'Open Ollama and select an installed model before starting grading.' })
     const queued = database.enqueueReadySubmissions(id, provider.model)
     gradingWorker.wake()
     return { queued, summary: database.gradingQueueSummary(id) }
@@ -212,7 +237,7 @@ export function createServer(
     const { id } = request.params as { id: string }
     if (!database.getAssignment(id)) return reply.code(404).send({ error: 'Assignment not found.' })
     const provider = await providerStore.status()
-    if (!provider.configured) return reply.code(409).send({ error: 'Save a Gemini API key before starting grading.' })
+    if (!provider.configured) return reply.code(409).send({ error: 'Open Ollama and select an installed model before starting grading.' })
     const queued = database.enqueueAllReadySubmissions(id, provider.model)
     gradingWorker.wake()
     return { queued, summary: database.gradingQueueSummary(id) }
@@ -222,7 +247,7 @@ export function createServer(
     const { id } = request.params as { id: string }
     if (!database.getAssignment(id)) return reply.code(404).send({ error: 'Assignment not found.' })
     const provider = await providerStore.status()
-    if (!provider.configured) return reply.code(409).send({ error: 'Save a Gemini API key before retrying grading.' })
+    if (!provider.configured) return reply.code(409).send({ error: 'Open Ollama and select an installed model before retrying grading.' })
     const queued = database.retryFailedSubmissions(id, provider.model)
     gradingWorker.wake()
     return { queued, summary: database.gradingQueueSummary(id) }
@@ -265,11 +290,17 @@ export function createServer(
     if (!submission) return reply.code(404).send({ error: 'Submission not found.' })
     if (!submission.pageNumber) return reply.code(409).send({ error: 'This submission is not linked to a PDF page.' })
 
-    const cacheKey = `${submission.sourcePath}:${submission.pageNumber}`
+    const query = z.object({ page: z.coerce.number().int().optional() }).safeParse(request.query)
+    if (!query.success) return reply.code(400).send({ error: 'Invalid page number.' })
+    const pageNumber = query.data.page ?? submission.pageNumber
+    if (pageNumber < submission.pageNumber || pageNumber > (submission.pageEndNumber ?? submission.pageNumber)) {
+      return reply.code(400).send({ error: 'Page is outside this student response.' })
+    }
+    const cacheKey = `${submission.sourcePath}:${pageNumber}`
     let preview = pagePreviewCache.get(cacheKey)
     if (!preview) {
       try {
-        preview = await renderPdfPage(submission.sourcePath, submission.pageNumber)
+        preview = await renderPdfPage(submission.sourcePath, pageNumber)
         pagePreviewCache.set(cacheKey, preview)
         if (pagePreviewCache.size > 24) {
           const oldest = pagePreviewCache.keys().next().value
@@ -279,7 +310,7 @@ export function createServer(
         return reply.code(422).send({ error: error instanceof Error ? error.message : 'The PDF page could not be rendered.' })
       }
     }
-    return { ...preview, pageNumber: submission.pageNumber, sourceFileName: submission.sourceFileName }
+    return { ...preview, pageNumber, sourceFileName: submission.sourceFileName }
   })
 
   app.put('/api/submissions/:id/extraction', async (request, reply) => {
@@ -313,7 +344,8 @@ async function extractOne(
         issue.includes('No student response') ||
         issue.includes('unusually short') ||
         issue.includes('Student name') ||
-        issue.includes('Student ID')
+        issue.includes('Student ID') ||
+        issue.includes('marker was not found')
       )
       return {
         studentName: extracted.studentName,
@@ -321,6 +353,7 @@ async function extractOne(
         rawText: extracted.rawText,
         reviewedText: extracted.responseText,
         pageNumber: extracted.pageNumber,
+        pageEndNumber: extracted.pageEndNumber,
         status: blockingIssues.length ? 'extraction_problem' as const : 'extracted' as const,
         issueMessage: extracted.issues.length ? extracted.issues.join(' ') : null
       }

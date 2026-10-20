@@ -1,5 +1,8 @@
 import type {
   Assignment,
+  SelectGradingRubricResult,
+  CreateRubricDraftInput,
+  RubricDefinition,
   CreateAssignmentInput,
   DashboardSummary,
   DraftScoreReview,
@@ -41,6 +44,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   dashboard: (): Promise<DashboardSummary> => request('/api/dashboard'),
   templates: (): Promise<TemplateVersion[]> => request('/api/templates'),
+  createRubric: (input: CreateRubricDraftInput): Promise<TemplateVersion> => request('/api/templates', { method: 'POST', body: JSON.stringify(input) }),
+  saveRubric: (id: string, rubric: RubricDefinition): Promise<TemplateVersion> => request(`/api/templates/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(rubric) }),
+  publishRubric: (id: string): Promise<TemplateVersion> => request(`/api/templates/${encodeURIComponent(id)}/publish`, { method: 'POST', body: '{}' }),
   assignments: (): Promise<Assignment[]> => request('/api/assignments'),
   assignment: (id: string): Promise<{ assignment: Assignment; submissions: Submission[] }> =>
     request(`/api/assignments/${encodeURIComponent(id)}`),
@@ -66,18 +72,20 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({})
     }),
-  pagePreview: (submissionId: string): Promise<{
+  pagePreview: (submissionId: string, page?: number): Promise<{
     dataUrl: string
     width: number
     height: number
     pageNumber: number
     sourceFileName: string
-  }> => request(`/api/submissions/${encodeURIComponent(submissionId)}/page-preview`),
+  }> => request(`/api/submissions/${encodeURIComponent(submissionId)}/page-preview${page === undefined ? '' : `?page=${page}`}`),
   provider: (): Promise<ProviderStatus> => request('/api/provider'),
   saveProvider: (input: SaveProviderInput): Promise<ProviderStatus> =>
     request('/api/provider', { method: 'PUT', body: JSON.stringify(input) }),
   gradingSummary: (assignmentId: string): Promise<GradingQueueSummary> =>
     request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading`),
+  selectGradingRubric: (assignmentId: string, templateVersionId: string): Promise<SelectGradingRubricResult> =>
+    request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading/rubric`, { method: 'PUT', body: JSON.stringify({ templateVersionId }) }),
   startGrading: (assignmentId: string): Promise<{ queued: number; summary: GradingQueueSummary }> =>
     request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading/start`, {
       method: 'POST', body: JSON.stringify({})

@@ -2,6 +2,8 @@ import Database from 'better-sqlite3'
 import { createHash, randomUUID } from 'node:crypto'
 import type {
   Assignment,
+  SelectGradingRubricResult,
+  CreateRubricDraftInput,
   CreateAssignmentInput,
   DashboardSummary,
   DraftScoreReview,
@@ -20,6 +22,9 @@ import {
   staarRubric
 } from '../shared/defaultTemplate'
 import { validateRubric } from '../shared/rubricValidation'
+import { telpasRubric, TELPAS_RUBRIC_KEY } from '../shared/telpasRubric'
+import { originalRubric, ORIGINAL_RUBRIC_KEY } from '../shared/originalRubric'
+import { rubricDraftSchema } from '../shared/rubricSchema'
 
 interface TemplateRow {
   id: string
@@ -57,6 +62,7 @@ interface SubmissionRow {
   content_hash: string
   source_document_hash: string
   student_index: number
+  page_end_number: number | null
   page_number: number | null
   student_name: string | null
   student_id: string | null
@@ -94,6 +100,7 @@ export class AutoGraderDatabase {
     this.db.pragma('foreign_keys = ON')
     this.migrate()
     this.seed()
+    this.seedOriginalRubric()
     this.normalizeExtractionStatuses()
     this.recoverInterruptedGrading()
   }
@@ -192,6 +199,7 @@ export class AutoGraderDatabase {
     this.addColumnIfMissing('submissions', 'source_document_hash', 'TEXT')
     this.addColumnIfMissing('submissions', 'student_index', 'INTEGER NOT NULL DEFAULT 1')
     this.addColumnIfMissing('submissions', 'page_number', 'INTEGER')
+    this.addColumnIfMissing('submissions', 'page_end_number', 'INTEGER')
     this.db.exec(`
       UPDATE submissions SET source_document_hash = content_hash WHERE source_document_hash IS NULL;
       CREATE UNIQUE INDEX IF NOT EXISTS idx_submissions_source_student
@@ -272,9 +280,65 @@ export class AutoGraderDatabase {
     transaction()
   }
 
+  private seedOriginalRubric(): void {
+    for (const [key, rubric] of [[ORIGINAL_RUBRIC_KEY, originalRubric], [TELPAS_RUBRIC_KEY, telpasRubric]] as const) {
+      if (this.db.prepare('SELECT id FROM template_versions WHERE template_key = ?').get(key)) continue
+      const now = new Date().toISOString()
+      this.db.prepare(`
+        INSERT INTO template_versions (id, template_key, version, name, status, rubric_json,
+          import_profile_json, feedback_settings_json, export_layout_json, created_at, published_at)
+        VALUES (?, ?, 1, ?, 'published', ?, ?, ?, ?, ?, ?)
+      `).run(randomUUID(), key, rubric.name, JSON.stringify(rubric),
+        JSON.stringify(defaultImportProfile), JSON.stringify(defaultFeedbackSettings), JSON.stringify(defaultExportLayout), now, now)
+    }
+  }
+
+  createRubricDraft(input: CreateRubricDraftInput): TemplateVersion {
+    return this.db.transaction(() => {
+      const source = input.sourceId ? this.getTemplate(input.sourceId) : null
+      if (input.sourceId && !source) throw new Error('Source rubric not found.')
+      if (input.newVersion && (!source || source.status !== 'published' || [ORIGINAL_RUBRIC_KEY, TELPAS_RUBRIC_KEY].includes(source.templateKey))) {
+        throw new Error('Create a copy of the original, or choose a published custom rubric to version.')
+      }
+      const templateKey = input.newVersion ? source!.templateKey : randomUUID()
+      const version = input.newVersion ? (this.db.prepare('SELECT MAX(version) AS version FROM template_versions WHERE template_key = ?').get(templateKey) as { version: number }).version + 1 : 1
+      const rubric: RubricDefinition = source ? structuredClone(source.rubric) : { name: 'New rubric', criteria: [], rules: [] }
+      if (source && !input.newVersion) rubric.name = `${source.name.slice(0, 150)} — copy`
+      const id = randomUUID()
+      this.db.prepare(`
+        INSERT INTO template_versions (id, template_key, version, name, status, rubric_json,
+          import_profile_json, feedback_settings_json, export_layout_json, created_at)
+        VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)
+      `).run(id, templateKey, version, rubric.name, JSON.stringify(rubric),
+        JSON.stringify(source?.importProfile ?? defaultImportProfile), JSON.stringify(source?.feedbackSettings ?? defaultFeedbackSettings),
+        JSON.stringify(source?.exportLayout ?? defaultExportLayout), new Date().toISOString())
+      return this.getTemplate(id)!
+    })()
+  }
+
+  saveRubricDraft(id: string, input: RubricDefinition): TemplateVersion {
+    const rubric = rubricDraftSchema.parse(input)
+    const result = this.db.prepare(`UPDATE template_versions SET name = ?, rubric_json = ? WHERE id = ? AND status = 'draft' AND template_key NOT IN (?, ?)`)
+      .run(rubric.name, JSON.stringify(rubric), id, ORIGINAL_RUBRIC_KEY, TELPAS_RUBRIC_KEY)
+    if (!result.changes) throw new Error('Only drafts can be edited. Make a copy or create a new version.')
+    return this.getTemplate(id)!
+  }
+
+  publishRubricDraft(id: string): TemplateVersion {
+    return this.db.transaction(() => {
+      const template = this.getTemplate(id)
+      if (!template || template.status !== 'draft') throw new Error('Only a saved draft can be published.')
+      const validation = validateRubric(template.rubric)
+      if (!validation.valid) throw new Error(validation.errors.join(' '))
+      this.db.prepare("UPDATE template_versions SET status = 'published', published_at = ? WHERE id = ? AND status = 'draft'")
+        .run(new Date().toISOString(), id)
+      return this.getTemplate(id)!
+    })()
+  }
+
   listTemplates(): TemplateVersion[] {
     const rows = this.db
-      .prepare('SELECT * FROM template_versions ORDER BY template_key, version DESC')
+      .prepare(`SELECT * FROM template_versions ORDER BY CASE WHEN template_key = '${ORIGINAL_RUBRIC_KEY}' THEN 0 ELSE 1 END, created_at DESC, version DESC`)
       .all() as TemplateRow[]
     return rows.map(mapTemplate)
   }
@@ -302,7 +366,7 @@ export class AutoGraderDatabase {
   listSubmissions(assignmentId: string): Submission[] {
     const rows = this.db.prepare(`
       SELECT id, assignment_id, source_path, source_file_name, content_hash,
-             source_document_hash, student_index, page_number,
+             source_document_hash, student_index, page_number, page_end_number,
              student_name, student_id, grade, raw_text, reviewed_text,
              status, issue_message, created_at, updated_at
       FROM submissions
@@ -315,7 +379,7 @@ export class AutoGraderDatabase {
   getSubmission(id: string): Submission | null {
     const row = this.db.prepare(`
       SELECT id, assignment_id, source_path, source_file_name, content_hash,
-             source_document_hash, student_index, page_number,
+             source_document_hash, student_index, page_number, page_end_number,
              student_name, student_id, grade, raw_text, reviewed_text,
              status, issue_message, created_at, updated_at
       FROM submissions WHERE id = ?
@@ -377,7 +441,7 @@ export class AutoGraderDatabase {
     this.db.prepare('UPDATE assignments SET updated_at = ? WHERE id = ?').run(now, input.assignmentId)
     const row = this.db.prepare(`
       SELECT id, assignment_id, source_path, source_file_name, content_hash,
-             source_document_hash, student_index, page_number,
+             source_document_hash, student_index, page_number, page_end_number,
              student_name, student_id, grade, raw_text, reviewed_text,
              status, issue_message, created_at, updated_at
       FROM submissions WHERE assignment_id = ? AND content_hash = ?
@@ -421,13 +485,14 @@ export class AutoGraderDatabase {
       rawText: string
       reviewedText: string
       pageNumber: number
+      pageEndNumber: number
       status: 'extracted' | 'extraction_problem'
       issueMessage: string | null
     }>
   }): void {
     const root = this.db.prepare(`
       SELECT id, assignment_id, source_path, source_file_name, content_hash,
-             source_document_hash, student_index, page_number,
+             source_document_hash, student_index, page_number, page_end_number,
              student_name, student_id, grade, raw_text, reviewed_text,
              status, issue_message, created_at, updated_at
       FROM submissions WHERE id = ?
@@ -447,27 +512,27 @@ export class AutoGraderDatabase {
       const first = input.students[0]!
       this.db.prepare(`
         UPDATE submissions
-        SET source_document_hash = ?, student_index = 1, page_number = ?,
+        SET source_document_hash = ?, student_index = 1, page_number = ?, page_end_number = ?,
             student_name = ?, student_id = ?, raw_text = ?, reviewed_text = ?,
             status = ?, issue_message = ?, updated_at = ?
         WHERE id = ?
       `).run(
-        documentHash, first.pageNumber, first.studentName, first.studentId,
+        documentHash, first.pageNumber, first.pageEndNumber, first.studentName, first.studentId,
         first.rawText, first.reviewedText, first.status, first.issueMessage, now, root.id
       )
 
       const insert = this.db.prepare(`
         INSERT INTO submissions (
           id, assignment_id, source_path, source_file_name, content_hash,
-          source_document_hash, student_index, page_number, student_name, student_id,
+          source_document_hash, student_index, page_number, page_end_number, student_name, student_id,
           grade, raw_text, reviewed_text, status, issue_message, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       input.students.slice(1).forEach((student, offset) => {
         const studentIndex = offset + 2
         insert.run(
           randomUUID(), root.assignment_id, root.source_path, root.source_file_name,
-          `${documentHash}:${studentIndex}`, documentHash, studentIndex, student.pageNumber,
+          `${documentHash}:${studentIndex}`, documentHash, studentIndex, student.pageNumber, student.pageEndNumber,
           student.studentName, student.studentId, root.grade, student.rawText,
           student.reviewedText, student.status, student.issueMessage, now, now
         )
@@ -494,7 +559,7 @@ export class AutoGraderDatabase {
 
     const row = this.db.prepare(`
       SELECT id, assignment_id, source_path, source_file_name, content_hash,
-             source_document_hash, student_index, page_number,
+             source_document_hash, student_index, page_number, page_end_number,
              student_name, student_id, grade, raw_text, reviewed_text,
              status, issue_message, created_at, updated_at
       FROM submissions WHERE id = ?
@@ -521,6 +586,46 @@ export class AutoGraderDatabase {
     return created
   }
 
+  selectGradingRubric(assignmentId: string, templateVersionId: string): SelectGradingRubricResult {
+    return this.db.transaction(() => {
+      const assignment = this.getAssignment(assignmentId)
+      if (!assignment) throw new Error('Assignment not found.')
+      const template = this.getTemplate(templateVersionId)
+      if (!template || template.status !== 'published') throw new Error('Choose a published rubric version.')
+      if (assignment.templateVersionId === templateVersionId) return { assignment, createdNewRun: false }
+      const active = this.db.prepare(`SELECT ga.id FROM grading_attempts ga JOIN submissions s ON s.id = ga.submission_id
+        WHERE s.assignment_id = ? AND ga.status IN ('queued', 'running') LIMIT 1`).get(assignmentId)
+      if (active) throw new Error('Stop queued requests and wait for the current response to finish before changing rubrics.')
+      const hasHistory = this.db.prepare(`SELECT ga.id FROM grading_attempts ga JOIN submissions s ON s.id = ga.submission_id
+        WHERE s.assignment_id = ? LIMIT 1`).get(assignmentId)
+      if (!hasHistory) {
+        this.db.prepare('UPDATE assignments SET template_version_id = ?, updated_at = ? WHERE id = ?')
+          .run(templateVersionId, new Date().toISOString(), assignmentId)
+        return { assignment: this.getAssignment(assignmentId)!, createdNewRun: false }
+      }
+      // A new assignment keeps earlier results and exports tied to their rubric.
+      // Managed source PDFs are reused; response text, identity, and page ranges
+      // are copied, while scores and approvals remain exclusively on the old run.
+      const next = this.createAssignment({
+        name: `${assignment.name.slice(0, 75)} — ${template.name.slice(0, 65)} v${template.version}`.slice(0, 160),
+        grade: assignment.grade ?? 8, questionText: assignment.questionText, templateVersionId
+      })
+      const copy = this.db.prepare(`INSERT INTO submissions (
+        id, assignment_id, source_path, source_file_name, content_hash, source_document_hash,
+        student_index, page_number, page_end_number, student_name, student_id, grade,
+        raw_text, reviewed_text, status, issue_message, created_at, updated_at
+      ) SELECT ?, ?, source_path, source_file_name, content_hash, source_document_hash,
+        student_index, page_number, page_end_number, student_name, student_id, grade,
+        raw_text, reviewed_text,
+        CASE WHEN status IN ('ready', 'draft_scored', 'reviewed', 'approved', 'scoring_error') THEN 'ready' ELSE status END,
+        CASE WHEN status IN ('ready', 'draft_scored', 'reviewed', 'approved', 'scoring_error') THEN NULL ELSE issue_message END,
+        ?, ? FROM submissions WHERE id = ?`)
+      const now = new Date().toISOString()
+      for (const submission of this.listSubmissions(assignmentId)) copy.run(randomUUID(), next.id, now, now, submission.id)
+      return { assignment: this.getAssignment(next.id)!, createdNewRun: true }
+    })()
+  }
+
   enqueueReadySubmissions(assignmentId: string, modelName: string, limit = 1): number {
     const assignment = this.getAssignment(assignmentId)
     if (!assignment) throw new Error('Assignment not found.')
@@ -535,7 +640,7 @@ export class AutoGraderDatabase {
       INSERT OR IGNORE INTO grading_attempts (
         id, submission_id, template_version_id, model_provider, model_name,
         status, request_fingerprint, created_at
-      ) VALUES (?, ?, ?, 'gemini', ?, 'queued', ?, ?)
+      ) VALUES (?, ?, ?, 'ollama', ?, 'queued', ?, ?)
     `)
     const update = this.db.prepare(`
       UPDATE submissions SET status = 'scoring', issue_message = NULL, updated_at = ?
@@ -608,7 +713,7 @@ export class AutoGraderDatabase {
     return this.db.transaction(() => {
       const attempt = this.db.prepare(`
         SELECT id, submission_id, model_name
-        FROM grading_attempts WHERE status = 'queued' ORDER BY created_at, id LIMIT 1
+        FROM grading_attempts WHERE status = 'queued' AND model_provider = 'ollama' ORDER BY created_at, id LIMIT 1
       `).get() as GradingAttemptRow | undefined
       if (!attempt) return null
       const claimed = this.db.prepare(`
@@ -680,7 +785,7 @@ export class AutoGraderDatabase {
 
   getNextDraftScore(assignmentId: string): DraftScoreReview | null {
     const row = this.db.prepare(`
-      SELECT ga.id AS attempt_id, ga.submission_id, ga.model_name, ga.result_json, ga.completed_at
+      SELECT ga.id AS attempt_id, ga.submission_id, ga.model_name, ga.result_json, ga.completed_at, ga.template_version_id
       FROM grading_attempts ga
       JOIN submissions s ON s.id = ga.submission_id
       WHERE s.assignment_id = ? AND s.status = 'draft_scored'
@@ -693,6 +798,7 @@ export class AutoGraderDatabase {
       ORDER BY ga.completed_at, ga.id
       LIMIT 1
     `).get(assignmentId) as {
+      template_version_id: string
       attempt_id: string
       submission_id: string
       model_name: string
@@ -703,6 +809,7 @@ export class AutoGraderDatabase {
     const submission = this.getSubmission(row.submission_id)
     if (!submission) return null
     return {
+      rubric: this.getTemplate(row.template_version_id)!.rubric,
       attemptId: row.attempt_id,
       submission,
       result: JSON.parse(row.result_json) as GradingResult,
@@ -838,7 +945,7 @@ export class AutoGraderDatabase {
       JOIN submissions s ON s.id = ga.submission_id
       WHERE s.assignment_id = ? AND s.status = 'scoring_error'
         AND ga.status = 'failed' AND ga.error_message IS NOT NULL
-      ORDER BY CASE WHEN ga.error_message LIKE 'Gemini returned %' THEN 0 ELSE 1 END,
+      ORDER BY CASE WHEN ga.error_message LIKE 'Ollama returned %' THEN 0 ELSE 1 END,
                ga.completed_at DESC
       LIMIT 1
     `).get(assignmentId) as { error_message: string } | undefined
@@ -923,6 +1030,7 @@ function mapSubmission(row: SubmissionRow): Submission {
     sourceDocumentHash: row.source_document_hash,
     studentIndex: row.student_index,
     pageNumber: row.page_number,
+    pageEndNumber: row.page_end_number ?? row.page_number,
     studentName: row.student_name,
     studentId: row.student_id,
     grade: row.grade,

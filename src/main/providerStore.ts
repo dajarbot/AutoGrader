@@ -1,80 +1,53 @@
-import { safeStorage } from 'electron'
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import type { ProviderStatus, SaveProviderInput } from '../shared/contracts'
 
-interface StoredProviderConfig {
-  provider: 'gemini'
-  model: string
-  encryptedApiKey?: string
-}
-
-const DEFAULT_MODEL = 'gemini-3.5-flash-lite'
-const RETIRED_MODELS = new Set(['gemini-2.5-flash-lite'])
+export const OLLAMA_URL = 'http://127.0.0.1:11434'
+const DEFAULT_MODEL = 'mistral:latest'
 
 export class ProviderStore {
   constructor(private readonly path: string) {}
 
   async status(): Promise<ProviderStatus> {
-    const stored = await this.read()
-    return {
-      provider: 'gemini',
-      model: stored.model,
-      configured: Boolean(stored.encryptedApiKey && safeStorage.isEncryptionAvailable()),
-      secureStorageAvailable: safeStorage.isEncryptionAvailable()
+    const model = await this.model()
+    try {
+      const models = await this.models()
+      return { provider: 'ollama', model, configured: models.includes(model), models }
+    } catch {
+      return { provider: 'ollama', model, configured: false, models: [] }
+    }
+  }
+
+  async models(): Promise<string[]> {
+    try {
+      const response = await fetch(`${OLLAMA_URL}/api/tags`, { signal: AbortSignal.timeout(5000) })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      const payload = await response.json() as { models: Array<{ name: string }> }
+      return payload.models.map((model) => model.name)
+    } catch {
+      throw new Error('Cannot reach local Ollama. Open Ollama or run "ollama serve", then try again.')
     }
   }
 
   async save(input: SaveProviderInput): Promise<ProviderStatus> {
-    if (!safeStorage.isEncryptionAvailable()) {
-      throw new Error('Secure credential storage is not available on this computer.')
+    const model = input.model.trim()
+    if (!(await this.models()).includes(model)) {
+      throw new Error('Choose an installed Ollama model. Run "ollama list" to see available models.')
     }
-
-    const current = await this.read()
-    const next: StoredProviderConfig = {
-      provider: 'gemini',
-      model: input.model.trim(),
-      encryptedApiKey: current.encryptedApiKey
-    }
-    if (input.apiKey?.trim()) {
-      next.encryptedApiKey = safeStorage.encryptString(input.apiKey.trim()).toString('base64')
-    }
-    if (!next.encryptedApiKey) throw new Error('Enter a Gemini API key.')
-
     await mkdir(dirname(this.path), { recursive: true })
     const temporaryPath = `${this.path}.tmp`
-    await writeFile(temporaryPath, JSON.stringify(next), { mode: 0o600 })
+    await writeFile(temporaryPath, JSON.stringify({ provider: 'ollama', model }), { mode: 0o600 })
     await rename(temporaryPath, this.path)
     return this.status()
   }
 
-  async apiKey(): Promise<string | null> {
-    if (!safeStorage.isEncryptionAvailable()) return null
-    const stored = await this.read()
-    if (!stored.encryptedApiKey) return null
-    try {
-      return safeStorage.decryptString(Buffer.from(stored.encryptedApiKey, 'base64'))
-    } catch {
-      return null
-    }
-  }
-
   async model(): Promise<string> {
-    return (await this.read()).model
-  }
-
-  private async read(): Promise<StoredProviderConfig> {
     try {
-      const parsed = JSON.parse(await readFile(this.path, 'utf8')) as Partial<StoredProviderConfig>
-      return {
-        provider: 'gemini',
-        model: typeof parsed.model === 'string' && parsed.model.trim() && !RETIRED_MODELS.has(parsed.model)
-          ? parsed.model
-          : DEFAULT_MODEL,
-        encryptedApiKey: typeof parsed.encryptedApiKey === 'string' ? parsed.encryptedApiKey : undefined
-      }
+      const parsed = JSON.parse(await readFile(this.path, 'utf8'))
+      return parsed.provider === 'ollama' && typeof parsed.model === 'string' && parsed.model.trim()
+        ? parsed.model : DEFAULT_MODEL
     } catch {
-      return { provider: 'gemini', model: DEFAULT_MODEL }
+      return DEFAULT_MODEL
     }
   }
 }

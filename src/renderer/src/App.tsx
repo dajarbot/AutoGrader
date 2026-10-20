@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { api } from './api'
+import { RubricLibrary, type RubricLibraryHandle } from './RubricLibrary'
+import { applyScoringRules } from '../../shared/rubricValidation'
 import type {
   Assignment,
   CreateAssignmentInput,
@@ -16,6 +18,7 @@ import type {
 type Screen = 'assignment' | 'templates'
 
 export function App(): React.JSX.Element {
+  const rubricLibrary = useRef<RubricLibraryHandle>(null)
   const [screen, setScreen] = useState<Screen>('assignment')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [templates, setTemplates] = useState<TemplateVersion[]>([])
@@ -43,6 +46,11 @@ export function App(): React.JSX.Element {
     void refresh()
   }, [])
 
+  const leaveRubric = async (next: () => void): Promise<void> => {
+    try { if (screen === 'templates') await rubricLibrary.current?.saveBeforeLeave(); next() }
+    catch (cause) { setError(cause instanceof Error ? cause.message : 'Save the rubric before continuing.') }
+  }
+
   const selectedAssignment = assignments.find((assignment) => assignment.id === selectedAssignmentId)
 
   return (
@@ -51,16 +59,16 @@ export function App(): React.JSX.Element {
         <div className="brand compact"><div className="brand-mark">A</div><div><strong>AutoGrader</strong><span>Local workflow</span></div></div>
         <div className="topbar-assignment">
           {selectedAssignment ? (
-            <button className="assignment-switcher" onClick={() => setShowAssignmentChooser(true)}>
+            <button className="assignment-switcher" onClick={() => void leaveRubric(() => setShowAssignmentChooser(true))}>
               <span>Current assignment</span><strong>{selectedAssignment.name}</strong><b>⌄</b>
             </button>
           ) : <span className="topbar-empty">No assignment yet</span>}
         </div>
         <div className="topbar-actions">
-          <button className="quiet-button" onClick={() => setScreen(screen === 'templates' ? 'assignment' : 'templates')}>
+          <button className="quiet-button" onClick={() => void leaveRubric(() => setScreen(screen === 'templates' ? 'assignment' : 'templates'))}>
             {screen === 'templates' ? 'Back to workflow' : 'Rubric'}
           </button>
-          <button className="primary-button" onClick={() => setShowNewAssignment(true)}>＋ New assignment</button>
+          <button className="primary-button" onClick={() => void leaveRubric(() => setShowNewAssignment(true))}>＋ New assignment</button>
         </div>
       </header>
       <main className="guided-main">
@@ -68,11 +76,11 @@ export function App(): React.JSX.Element {
         {loading ? (
           <LoadingState />
         ) : screen === 'templates' ? (
-          <TemplateLibrary templates={templates} />
+          <RubricLibrary ref={rubricLibrary} templates={templates} onRefresh={refresh} />
         ) : selectedAssignmentId ? (
-          <AssignmentWorkspace assignmentId={selectedAssignmentId} />
+          <AssignmentWorkspace assignmentId={selectedAssignmentId} templates={templates} onAssignmentActivated={async (id) => { await refresh(); setSelectedAssignmentId(id) }} />
         ) : (
-          <div className="start-workflow"><div className="empty-icon"><Icon name="papers" /></div><h1>Start with an assignment</h1><p>Add the writing task, then AutoGrader will take you directly through PDFs, extraction, grading, review, and export.</p><button className="primary-button" onClick={() => setShowNewAssignment(true)}>Create assignment</button></div>
+          <div className="start-workflow"><div className="empty-icon"><Icon name="papers" /></div><h1>Start with an assignment</h1><p>Add the writing task, then AutoGrader will take you directly through PDFs, extraction, grading, review, and export.</p><button className="primary-button" onClick={() => void leaveRubric(() => setShowNewAssignment(true))}>Create assignment</button></div>
         )}
       </main>
 
@@ -128,7 +136,7 @@ function AssignmentChooser({ assignments, selectedId, onClose, onSelect }: {
 
 const emptyQueue: GradingQueueSummary = { ready: 0, queued: 0, running: 0, draftScored: 0, failed: 0, approved: 0, lastError: null }
 
-function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.JSX.Element {
+function AssignmentWorkspace({ assignmentId, templates, onAssignmentActivated }: { assignmentId: string; templates: TemplateVersion[]; onAssignmentActivated: (id: string) => Promise<void> }): React.JSX.Element {
   const [assignment, setAssignment] = useState<Assignment | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [provider, setProvider] = useState<ProviderStatus | null>(null)
@@ -139,6 +147,7 @@ function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.
   const [extracting, setExtracting] = useState(false)
   const [accepting, setAccepting] = useState(false)
   const [starting, setStarting] = useState(false)
+  const [switchingRubric, setSwitchingRubric] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
@@ -149,7 +158,7 @@ function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.
   ).length
   const extractionProblems = submissions.filter((submission) => submission.status === 'extraction_problem').length
   const sourcesWithReadyStudents = new Set(
-    submissions.filter((submission) => submission.status === 'ready').map((submission) => submission.sourceDocumentHash)
+    submissions.filter((submission) => !['imported', 'extracted', 'extraction_problem'].includes(submission.status)).map((submission) => submission.sourceDocumentHash)
   )
   const canReextract = submissions.some((submission) =>
     ['imported', 'extracted', 'extraction_problem'].includes(submission.status) &&
@@ -251,6 +260,23 @@ function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.
     } finally { setStarting(false) }
   }
 
+  const selectRubric = async (templateVersionId: string): Promise<void> => {
+    try {
+      setSwitchingRubric(true); setError(''); setNotice('')
+      const result = await api.selectGradingRubric(assignmentId, templateVersionId)
+      if (result.createdNewRun) {
+        await onAssignmentActivated(result.assignment.id)
+        setNotice('New grading run opened with the same responses. Earlier scores remain available in the assignment switcher.')
+      } else {
+        await load()
+        await onAssignmentActivated(assignmentId)
+        setNotice(`Rubric selected: ${result.assignment.templateName} · v${result.assignment.templateVersion}.`)
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'The rubric could not be changed.')
+    } finally { setSwitchingRubric(false) }
+  }
+
   const stopGrading = async (): Promise<void> => {
     try {
       setStarting(true); setError(''); setNotice('')
@@ -303,6 +329,10 @@ function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.
 
       {stage === 'grade' && provider && (
         <GradingStage
+          assignment={assignment}
+          templates={templates}
+          switchingRubric={switchingRubric}
+          onSelectRubric={(id) => void selectRubric(id)}
           provider={provider}
           queue={queue}
           total={submissions.length}
@@ -334,23 +364,41 @@ function AssignmentWorkspace({ assignmentId }: { assignmentId: string }): React.
 }
 
 function SubmissionTable({ submissions, visibleCount, onMore, onReview }: { submissions: Submission[]; visibleCount: number; onMore: () => void; onReview: (submission: Submission) => void }): React.JSX.Element {
-  return <div className="submission-table"><div className="submission-table-header"><span>File</span><span>Student identity</span><span>Grade</span><span>Status</span><span /></div>{submissions.slice(0, visibleCount).map((submission) => <div className="submission-table-row" key={submission.id}><div className="file-cell"><Icon name="papers" /><span><strong>{submission.sourceFileName}</strong><small>{submission.issueMessage ?? `Page ${submission.pageNumber ?? '—'} · Student ${submission.studentIndex}`}</small></span></div><span>{submission.studentName ?? 'Pending extraction'}</span><span>{submission.grade ? `${submission.grade}th` : '—'}</span><span><span className={`status-pill ${submission.status}`}>{submission.status.replace('_', ' ')}</span></span><button className="review-button" onClick={() => onReview(submission)}>Review</button></div>)}{visibleCount < submissions.length && <div className="load-more-row"><span>Showing {visibleCount} of {submissions.length} submissions</span><button className="secondary-button" onClick={onMore}>Show 75 more</button></div>}</div>
+  return <div className="submission-table"><div className="submission-table-header"><span>File</span><span>Student identity</span><span>Grade</span><span>Status</span><span /></div>{submissions.slice(0, visibleCount).map((submission) => <div className="submission-table-row" key={submission.id}><div className="file-cell"><Icon name="papers" /><span><strong>{submission.sourceFileName}</strong><small>{submission.issueMessage ?? `${submissionPagesLabel(submission)} · Student ${submission.studentIndex}`}</small></span></div><span>{submission.studentName ?? 'Pending extraction'}</span><span>{submission.grade ? `${submission.grade}th` : '—'}</span><span><span className={`status-pill ${submission.status}`}>{submission.status.replace('_', ' ')}</span></span><button className="review-button" onClick={() => onReview(submission)}>Review</button></div>)}{visibleCount < submissions.length && <div className="load-more-row"><span>Showing {visibleCount} of {submissions.length} submissions</span><button className="secondary-button" onClick={onMore}>Show 75 more</button></div>}</div>
 }
 
-function GradingStage({ provider, queue, total, extractionProblems, starting, onProviderSaved, onStart, onStartAll, onRetry, onStop, onReview }: { provider: ProviderStatus; queue: GradingQueueSummary; total: number; extractionProblems: number; starting: boolean; onProviderSaved: (provider: ProviderStatus) => void; onStart: () => void; onStartAll: () => void; onRetry: () => void; onStop: () => void; onReview: () => void }): React.JSX.Element {
+function GradingStage({ assignment, templates, switchingRubric, onSelectRubric, provider, queue, total, extractionProblems, starting, onProviderSaved, onStart, onStartAll, onRetry, onStop, onReview }: { assignment: Assignment; templates: TemplateVersion[]; switchingRubric: boolean; onSelectRubric: (id: string) => void; provider: ProviderStatus; queue: GradingQueueSummary; total: number; extractionProblems: number; starting: boolean; onProviderSaved: (provider: ProviderStatus) => void; onStart: () => void; onStartAll: () => void; onRetry: () => void; onStop: () => void; onReview: () => void }): React.JSX.Element {
   const [confirmAll, setConfirmAll] = useState(false)
+  const [rubricId, setRubricId] = useState(assignment.templateVersionId)
+  useEffect(() => { setRubricId(assignment.templateVersionId); setConfirmAll(false) }, [assignment.id, assignment.templateVersionId])
+  const pendingRubric = rubricId !== assignment.templateVersionId
+  const gradingDisabled = starting || switchingRubric || pendingRubric
+  const selectedRubric = templates.find((template) => template.id === rubricId)
+
   const active = queue.queued + queue.running
   const finished = queue.draftScored + queue.approved
   const paused = queue.queued > 0 && queue.running === 0 && queue.failed > 0
   return <div className="grading-layout">
     <section className="panel grading-hero"><div><p className="eyebrow">Step 4 · Sequential grading</p><h2>{paused ? 'The batch paused after a provider error' : active ? `${active} response${active === 1 ? ' is' : 's are'} processing or queued` : queue.draftScored ? `${queue.draftScored} draft scores are ready to examine` : `${queue.ready} responses remain unscored`}</h2><p>Grade one for calibration or queue the remaining stack. Batch mode still sends only one provider request at a time and stops on provider-level errors.</p></div>
+      <div className="grading-rubric-selector">
+        <label htmlFor="grading-rubric">Rubric for this grading run</label>
+        <div className="grading-rubric-controls"><select id="grading-rubric" value={rubricId} disabled={Boolean(active) || starting || switchingRubric} onChange={(event) => { setRubricId(event.target.value); setConfirmAll(false) }}>
+          {templates.filter((template) => template.status === 'published' || template.id === assignment.templateVersionId).map((template) => <option key={template.id} value={template.id}>{template.name} · v{template.version}</option>)}
+        </select><button className="secondary-button" disabled={!pendingRubric || Boolean(active) || starting || switchingRubric} onClick={() => onSelectRubric(rubricId)}>{switchingRubric ? 'Applying…' : 'Use selected rubric'}</button></div>
+        <p>{active ? 'Stop queued requests and wait for the current response to finish before switching.' : pendingRubric ? 'Apply this selection before grading. If grading history exists, a separate run will reuse these responses and preserve earlier scores.' : 'Published versions only. Switching after grading creates a separate run so earlier scores stay available.'}</p>
+        {selectedRubric && <details><summary>View rubric · {selectedRubric.rubric.criteria.filter((criterion) => criterion.includedInTotal).reduce((sum, criterion) => sum + criterion.maxScore, 0)} points</summary>
+          {selectedRubric.rubric.scoringNotes && <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRubric.rubric.scoringNotes}</p>}
+          {selectedRubric.rubric.criteria.map((criterion) => <div key={criterion.key}><strong>{criterion.name} · {criterion.minScore ?? 0}–{criterion.maxScore}{criterion.includedInTotal ? '' : ' · Not included in total'}</strong>{[...criterion.levels].sort((a, b) => b.score - a.score).map((level) => <p key={level.score}>{level.score}: {level.descriptor}</p>)}</div>)}
+          {selectedRubric.rubric.rules.map((rule, index) => <p key={index}>{rule.explanation}</p>)}
+        </details>}
+      </div>
       <div className="queue-metrics"><QueueMetric value={queue.ready} label="Unscored" /><QueueMetric value={active} label="Processing" /><QueueMetric value={queue.draftScored} label="Awaiting review" /><QueueMetric value={queue.approved} label="Approved" /></div>
       {active > 0 && <div className="queue-progress"><span style={{ width: queue.running ? '65%' : '10%' }} /><p>Only one provider request is active; {queue.queued} waiting.</p></div>}
       {queue.lastError && <div className="queue-error"><strong>Why it paused</strong><p>{queue.lastError}</p></div>}
-      {confirmAll && !active && <div className="batch-confirm"><div><strong>Queue all {queue.ready} unscored responses?</strong><p>This can create up to {queue.ready} paid Gemini requests. They run sequentially, and you can stop the requests that have not started.</p></div><button className="quiet-button" onClick={() => setConfirmAll(false)}>Cancel</button><button className="primary-button" onClick={() => { setConfirmAll(false); onStartAll() }} disabled={starting}>Start {queue.ready} requests</button></div>}
+      {confirmAll && !active && <div className="batch-confirm"><div><strong>Queue all {queue.ready} unscored responses?</strong><p>This can create up to {queue.ready} local Ollama requests. They run sequentially, and you can stop the requests that have not started.</p></div><button className="quiet-button" onClick={() => setConfirmAll(false)}>Cancel</button><button className="primary-button" onClick={() => { setConfirmAll(false); onStartAll() }} disabled={gradingDisabled}>Start {queue.ready} requests</button></div>}
       <div className="grading-actions">
-        {!provider.configured ? <span>Connect Gemini below to continue.</span> : paused ? <><button className="secondary-button" onClick={onRetry} disabled={starting}>{starting ? 'Retrying…' : 'Retry one response'}</button><button className="quiet-button stop-button" onClick={onStop} disabled={starting}>Stop queued requests</button></> : queue.ready > 0 && !active ? <><button className="secondary-button" onClick={onStart} disabled={starting}>{starting ? 'Sending one…' : 'Grade one response'}</button><button className="primary-button" onClick={() => setConfirmAll(true)} disabled={starting || confirmAll}>Grade all {queue.ready}</button></> : null}
-        {queue.failed > 0 && !active && !paused && <button className="secondary-button" onClick={onRetry} disabled={starting}>Retry one failed response</button>}
+        {!provider.configured ? <span>Connect Ollama below to continue.</span> : paused ? <><button className="secondary-button" onClick={onRetry} disabled={gradingDisabled}>{starting ? 'Retrying…' : 'Retry one response'}</button><button className="quiet-button stop-button" onClick={onStop} disabled={starting}>Stop queued requests</button></> : queue.ready > 0 && !active ? <><button className="secondary-button" onClick={onStart} disabled={gradingDisabled}>{starting ? 'Sending one…' : 'Grade one response'}</button><button className="primary-button" onClick={() => setConfirmAll(true)} disabled={gradingDisabled || confirmAll}>Grade all {queue.ready}</button></> : null}
+        {queue.failed > 0 && !active && !paused && <button className="secondary-button" onClick={onRetry} disabled={gradingDisabled}>Retry one failed response</button>}
         {active > 0 && queue.queued > 0 && <button className="quiet-button stop-button" onClick={onStop} disabled={starting}>{starting ? 'Stopping…' : 'Stop after current'}</button>}
         {queue.draftScored > 0 && !active && <button className="primary-button" onClick={onReview}>Examine next draft →</button>}
       </div>
@@ -366,18 +414,24 @@ function QueueMetric({ value, label, tone = '' }: { value: number; label: string
 
 function ProviderCard({ provider, onSaved }: { provider: ProviderStatus; onSaved: (provider: ProviderStatus) => void }): React.JSX.Element {
   const [model, setModel] = useState(provider.model)
-  const [apiKey, setApiKey] = useState('')
   const [editing, setEditing] = useState(!provider.configured)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const save = async (event: FormEvent): Promise<void> => {
     event.preventDefault()
-    try { setSaving(true); setError(''); const updated = await api.saveProvider({ model, apiKey: apiKey || undefined }); onSaved(updated); setApiKey(''); setEditing(false) }
+    try { setSaving(true); setError(''); const updated = await api.saveProvider({ model }); onSaved(updated); setEditing(false) }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Provider settings could not be saved.') }
     finally { setSaving(false) }
   }
-  return <section className="panel provider-card"><div className="provider-heading"><div className="provider-logo">✦</div><div><span>Scoring provider</span><strong>Google Gemini</strong></div><span className={`connection-dot ${provider.configured ? 'connected' : ''}`}>{provider.configured ? 'Connected' : 'Not connected'}</span></div>
-    {editing ? <form onSubmit={(event) => void save(event)}>{error && <div className="form-error">{error}</div>}<label>Model<select value={model} onChange={(event) => setModel(event.target.value)}><option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite · lowest available cost</option><option value="gemini-3.8-flash">Gemini 3.8 Flash · highest quality/cost</option></select></label><label>API key<input type="password" autoComplete="off" value={apiKey} onChange={(event) => setApiKey(event.target.value)} placeholder={provider.configured ? 'Leave blank to keep saved key' : 'Paste Gemini API key'} /></label><p className="secure-note">3.5 Flash-Lite uses minimal thinking by default and output is capped for calibration. The key remains encrypted by macOS.</p><div className="dialog-actions">{provider.configured && <button type="button" className="secondary-button" onClick={() => setEditing(false)}>Cancel</button>}<button className="primary-button" type="submit" disabled={saving || (!provider.configured && !apiKey)}>{saving ? 'Saving…' : 'Save provider'}</button></div></form> : <div className="provider-summary"><div><span>Model</span><strong>{provider.model}</strong></div><div><span>Credential</span><strong>•••••••••• secured</strong></div><button className="secondary-button" onClick={() => setEditing(true)}>Change</button></div>}
+  return <section className="panel provider-card"><div className="provider-heading"><div className="provider-logo">✦</div><div><span>Scoring provider</span><strong>Ollama · local</strong></div><span className={`connection-dot ${provider.configured ? 'connected' : ''}`}>{provider.configured ? 'Ready' : 'Not connected'}</span></div>
+    {editing ? <form onSubmit={(event) => void save(event)}>
+      {error && <div className="form-error">{error}</div>}
+      <label>Installed model<input list="ollama-models" value={model} onChange={(event) => setModel(event.target.value)} placeholder="mistral:latest" /></label>
+      <datalist id="ollama-models">{provider.models.map((name) => <option key={name} value={name} />)}</datalist>
+      <p className="secure-note">Runs on this computer through Ollama. No API key is required. Open Ollama before grading; use “ollama list” to see installed model names.</p>
+      <div className="dialog-actions">{provider.configured && <button type="button" className="secondary-button" onClick={() => setEditing(false)}>Cancel</button>}<button className="primary-button" type="submit" disabled={saving || !model.trim()}>{saving ? 'Checking…' : 'Connect model'}</button></div>
+    </form> : <div className="provider-summary"><div><span>Model</span><strong>{provider.model}</strong></div><div><span>Connection</span><strong>Local Ollama</strong></div><button className="secondary-button" onClick={() => setEditing(true)}>Change</button></div>}
+
   </section>
 }
 
@@ -398,7 +452,6 @@ function ScoreReviewStage({
 }): React.JSX.Element {
   const [draft, setDraft] = useState<DraftScoreReview | null>(null)
   const [result, setResult] = useState<DraftScoreReview['result'] | null>(null)
-  const [preview, setPreview] = useState<{ dataUrl: string; pageNumber: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [exporting, setExporting] = useState<SpreadsheetExportScope | null>(null)
@@ -407,11 +460,10 @@ function ScoreReviewStage({
 
   const loadDraft = async (): Promise<void> => {
     try {
-      setLoading(true); setError(''); setPreview(null)
+      setLoading(true); setError('')
       const response = await api.nextDraftScore(assignmentId)
       setDraft(response.draft)
       setResult(response.draft?.result ?? null)
-      if (response.draft) setPreview(await api.pagePreview(response.draft.submission.id))
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'The draft score could not be loaded.')
     } finally { setLoading(false) }
@@ -423,10 +475,13 @@ function ScoreReviewStage({
     setResult((current) => {
       if (!current) return current
       let criteria = current.criteria.map((criterion) => criterion.key === key ? { ...criterion, score } : criterion)
-      if (key === 'development_organization' && score === 0) {
-        criteria = criteria.map((criterion) => criterion.key === 'conventions' ? { ...criterion, score: 0 } : criterion)
-      }
-      return { ...current, criteria, totalScore: criteria.reduce((sum, criterion) => sum + criterion.score, 0) }
+      if (!draft) return current
+      const scores = new Map(criteria.map((criterion) => [criterion.key, criterion.score]))
+      applyScoringRules(scores, draft.rubric)
+      criteria = criteria.map((criterion) => ({ ...criterion, score: scores.get(criterion.key)! }))
+      const totalScore = criteria.filter((criterion) => draft.rubric.criteria.find((item) => item.key === criterion.key)?.includedInTotal)
+        .reduce((sum, criterion) => sum + criterion.score, 0)
+      return { ...current, criteria, totalScore }
     })
   }
 
@@ -468,14 +523,14 @@ function ScoreReviewStage({
   if (!draft || !result) return <section className="panel next-stage-panel"><p className="eyebrow">Review complete</p><h2>No draft scores are waiting</h2><p>Your spreadsheet can be exported now, or return to grading when you want to score another response.</p>{error && <div className="error-banner inline">{error}</div>}{exportNotice && <div className="success-banner compact">{exportNotice}</div>}{exportActions}<button className="back-button" onClick={onBack}>← Back to grading</button></section>
 
   return <section className="score-review-stage">
-    <div className="score-review-toolbar"><div><button className="back-button" onClick={onBack}>← Back to grading</button><p><strong>{draft.submission.studentName}</strong> · Page {draft.submission.pageNumber} · {draftCount} drafts awaiting review</p></div><div className="review-toolbar-actions">{exportActions}<div className="score-total"><span>Reviewed total</span><strong>{result.criteria.reduce((sum, criterion) => sum + criterion.score, 0)} / {result.maxTotalScore}</strong></div></div></div>
+    <div className="score-review-toolbar"><div><button className="back-button" onClick={onBack}>← Back to grading</button><p><strong>{draft.submission.studentName}</strong> · {submissionPagesLabel(draft.submission)} · {draftCount} drafts awaiting review</p></div><div className="review-toolbar-actions">{exportActions}<div className="score-total"><span>Reviewed total</span><strong>{result.totalScore} / {result.maxTotalScore}</strong></div></div></div>
     {error && <div className="error-banner inline">{error}</div>}
     {exportNotice && <div className="success-banner compact">{exportNotice}</div>}
     <div className="score-review-grid">
-      <div className="pdf-preview-pane score-pdf"><div className="preview-heading"><strong>Original student page</strong><span>{draft.submission.sourceFileName}</span></div>{preview ? <div className="page-image-scroll"><img src={preview.dataUrl} alt={`Original PDF page ${preview.pageNumber}`} /></div> : <div className="preview-loading"><span /> Rendering page…</div>}</div>
+      <StudentPdfPreview key={draft.submission.id} submission={draft.submission} />
       <div className="panel score-editor"><div className="score-editor-heading"><div><p className="eyebrow">AI draft · {draft.modelName}</p><h2>Examine every score</h2></div><span>Nothing exports until approved</span></div>
-        <div className="score-response"><details><summary>Read extracted response text</summary><p>{draft.submission.reviewedText}</p></details></div>
-        {result.criteria.map((criterion) => <div className="score-criterion" key={criterion.key}><div><label>{criterion.name}<select value={criterion.score} onChange={(event) => updateScore(criterion.key, Number(event.target.value))}>{Array.from({ length: criterion.maxScore + 1 }, (_, score) => <option key={score} value={score}>{score} / {criterion.maxScore}</option>)}</select></label></div><textarea value={criterion.comment} onChange={(event) => updateComment(criterion.key, event.target.value)} rows={3} aria-label={`${criterion.name} comment`} /></div>)}
+        <div className="score-response">{draft.rubric.scoringNotes && <details><summary>Scoring notes</summary><p style={{ whiteSpace: 'pre-wrap' }}>{draft.rubric.scoringNotes}</p></details>}{draft.rubric.rules.map((rule, index) => <p key={index}>{rule.explanation}</p>)}<details><summary>Read extracted response text</summary><p>{draft.submission.reviewedText}</p></details></div>
+        {result.criteria.map((criterion) => <div className="score-criterion" key={criterion.key}><div><label>{criterion.name}<select aria-label={`${criterion.name} score`} value={criterion.score} onChange={(event) => updateScore(criterion.key, Number(event.target.value))}>{(draft.rubric.criteria.find((item) => item.key === criterion.key)?.levels ?? []).map(({ score }) => <option key={score} value={score}>{score} / {criterion.maxScore}</option>)}</select></label></div><textarea value={criterion.comment} onChange={(event) => updateComment(criterion.key, event.target.value)} rows={3} aria-label={`${criterion.name} comment`} /></div>)}
         <label className="overall-comment">Overall feedback<textarea value={result.overallComment} onChange={(event) => setResult({ ...result, overallComment: event.target.value })} rows={4} /></label>
         <div className="score-approval"><p>Approval saves this exact reviewed version. AI drafts remain auditable.</p><button className="primary-button" onClick={() => void approve()} disabled={saving}>{saving ? 'Approving…' : 'Approve score and open next →'}</button></div>
       </div>
@@ -498,19 +553,6 @@ function ExtractionReviewDialog({
   const [reviewedText, setReviewedText] = useState(submission.reviewedText ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [preview, setPreview] = useState<{ dataUrl: string; pageNumber: number } | null>(null)
-  const [previewError, setPreviewError] = useState('')
-
-  useEffect(() => {
-    let active = true
-    void api.pagePreview(submission.id)
-      .then((result) => { if (active) setPreview(result) })
-      .catch((cause) => {
-        if (active) setPreviewError(cause instanceof Error ? cause.message : 'Original page preview is unavailable.')
-      })
-    return () => { active = false }
-  }, [submission.id])
-
   const submit = async (event: FormEvent): Promise<void> => {
     event.preventDefault()
     const input: ReviewExtractionInput = { studentName, studentId, grade, reviewedText }
@@ -542,16 +584,7 @@ function ExtractionReviewDialog({
           {submission.issueMessage && <div className="warning-banner">{submission.issueMessage}</div>}
           {error && <div className="form-error">{error}</div>}
           <div className="extraction-review-grid">
-            <div className="pdf-preview-pane">
-              <div className="preview-heading"><strong>Original PDF</strong><span>Page {submission.pageNumber ?? '—'}</span></div>
-              {preview ? (
-                <div className="page-image-scroll"><img src={preview.dataUrl} alt={`Original PDF page ${preview.pageNumber}`} /></div>
-              ) : previewError ? (
-                <div className="preview-error">{previewError}</div>
-              ) : (
-                <div className="preview-loading"><span /> Rendering original page…</div>
-              )}
-            </div>
+            <StudentPdfPreview key={submission.id} submission={submission} />
             <div className="extraction-fields">
               <div className="identity-grid">
                 <label>Student name<input value={studentName} onChange={(event) => setStudentName(event.target.value)} required /></label>
@@ -572,98 +605,6 @@ function ExtractionReviewDialog({
         </form>
       </section>
     </div>
-  )
-}
-
-function TemplateLibrary({ templates }: { templates: TemplateVersion[] }): React.JSX.Element {
-  const [selectedId, setSelectedId] = useState(templates[0]?.id ?? '')
-  const selected = useMemo(
-    () => templates.find((template) => template.id === selectedId) ?? templates[0],
-    [selectedId, templates]
-  )
-
-  return (
-    <div className="page">
-      <header className="page-header">
-        <div>
-          <p className="eyebrow">Reusable configuration</p>
-          <h1>Templates</h1>
-          <p>Rubrics, extraction rules, feedback preferences, and exports are versioned together.</p>
-        </div>
-        <button className="secondary-button" disabled>＋ New template</button>
-      </header>
-
-      <div className="template-layout">
-        <section className="panel template-list-panel">
-          <div className="panel-heading compact"><h2>Template library</h2></div>
-          <div className="template-list">
-            {templates.map((template) => (
-              <button
-                key={template.id}
-                className={template.id === selected?.id ? 'selected' : ''}
-                onClick={() => setSelectedId(template.id)}
-              >
-                <strong>{template.name}</strong>
-                <span>Version {template.version} · {template.status}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {selected && <TemplateDetail template={selected} />}
-      </div>
-    </div>
-  )
-}
-
-function TemplateDetail({ template }: { template: TemplateVersion }): React.JSX.Element {
-  const maxTotal = template.rubric.criteria
-    .filter((criterion) => criterion.includedInTotal)
-    .reduce((sum, criterion) => sum + criterion.maxScore, 0)
-
-  return (
-    <section className="panel template-detail">
-      <div className="template-detail-header">
-        <div>
-          <span className="status-pill published">Published · v{template.version}</span>
-          <h2>{template.name}</h2>
-          <p>Maximum score: {maxTotal} points</p>
-        </div>
-        <button className="secondary-button" disabled>Duplicate to edit</button>
-      </div>
-
-      <div className="section-label">Scored traits</div>
-      <div className="rubric-grid">
-        {template.rubric.criteria.map((criterion) => (
-          <article key={criterion.key} className="criterion-card">
-            <div>
-              <h3>{criterion.name}</h3>
-              <span>0–{criterion.maxScore} points</span>
-            </div>
-            <ol reversed>
-              {[...criterion.levels].sort((a, b) => b.score - a.score).map((level) => (
-                <li key={level.score}>
-                  <strong>{level.score}</strong>
-                  <p>{level.descriptor}</p>
-                </li>
-              ))}
-            </ol>
-          </article>
-        ))}
-      </div>
-
-      <div className="rule-callout">
-        <Icon name="rule" />
-        <div><strong>Scoring rule</strong><p>{template.rubric.rules[0]?.explanation}</p></div>
-      </div>
-
-      <div className="template-facts">
-        <div><span>Import profile</span><strong>Individual student PDF</strong></div>
-        <div><span>Response marker</span><strong>{template.importProfile.responseMarker}</strong></div>
-        <div><span>Feedback</span><strong>Strength + next step</strong></div>
-        <div><span>Export</span><strong>Approved results by default</strong></div>
-      </div>
-    </section>
   )
 }
 
@@ -729,7 +670,7 @@ function NewAssignmentDialog({
             </label>
             <label>
               Template version
-              <select value={templateVersionId} onChange={(event) => setTemplateVersionId(event.target.value)} required>
+              <select aria-label="Template version" value={templateVersionId} onChange={(event) => setTemplateVersionId(event.target.value)} required>
                 {templates.map((template) => (
                   <option key={template.id} value={template.id}>{template.name} · v{template.version}</option>
                 ))}
@@ -773,4 +714,36 @@ function Icon({ name }: { name: 'grid' | 'template' | 'papers' | 'rule' }): Reac
     rule: <><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></>
   }
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>
+}
+
+function submissionPagesLabel(submission: Submission): string {
+  const start = submission.pageNumber
+  const end = submission.pageEndNumber ?? start
+  return start === end ? `Page ${start ?? '—'}` : `Pages ${start}–${end}`
+}
+
+function StudentPdfPreview({ submission }: { submission: Submission }): React.JSX.Element {
+  const start = submission.pageNumber ?? 1
+  const end = submission.pageEndNumber ?? start
+  const [page, setPage] = useState(start)
+  const [preview, setPreview] = useState<{ dataUrl: string; pageNumber: number } | null>(null)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    let active = true
+    setPreview(null); setError('')
+    void api.pagePreview(submission.id, page)
+      .then((result) => { if (active) setPreview(result) })
+      .catch((cause) => { if (active) setError(cause instanceof Error ? cause.message : 'Page preview unavailable.') })
+    return () => { active = false }
+  }, [submission.id, page])
+  return <div className="pdf-preview-pane score-pdf">
+    <div className="preview-heading"><strong>Original PDF</strong><span>{submissionPagesLabel(submission)}</span></div>
+    {end > start && <div className="preview-navigation">
+      <button type="button" className="secondary-button" disabled={page <= start} onClick={() => setPage(page - 1)}>Previous page</button>
+      <span>Page {page - start + 1} of {end - start + 1} student pages (PDF {start}–{end})</span>
+      <button type="button" className="secondary-button" disabled={page >= end} onClick={() => setPage(page + 1)}>Next page</button>
+    </div>}
+    {preview ? <div className="page-image-scroll"><img src={preview.dataUrl} alt={`Original PDF page ${preview.pageNumber}`} /></div>
+      : error ? <div className="preview-error">{error}</div> : <div className="preview-loading"><span /> Rendering page…</div>}
+  </div>
 }

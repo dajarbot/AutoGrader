@@ -19,6 +19,7 @@ export interface RubricLevel {
 export interface RubricCriterion {
   key: string
   name: string
+  minScore?: number
   maxScore: number
   includedInTotal: boolean
   levels: RubricLevel[]
@@ -33,6 +34,7 @@ export interface ScoringRule {
 
 export interface RubricDefinition {
   name: string
+  scoringNotes?: string
   criteria: RubricCriterion[]
   rules: ScoringRule[]
 }
@@ -84,6 +86,11 @@ export interface Assignment {
   updatedAt: string
 }
 
+export interface SelectGradingRubricResult {
+  assignment: Assignment
+  createdNewRun: boolean
+}
+
 export interface DashboardSummary {
   assignmentCount: number
   submissionCount: number
@@ -107,6 +114,7 @@ export interface Submission {
   contentHash: string
   sourceDocumentHash: string
   studentIndex: number
+  pageEndNumber: number | null
   pageNumber: number | null
   studentName: string | null
   studentId: string | null
@@ -179,18 +187,23 @@ export interface GradingQueueSummary {
 }
 
 export interface ProviderStatus {
-  provider: 'gemini'
+  provider: 'ollama'
   model: string
   configured: boolean
-  secureStorageAvailable: boolean
+  models: string[]
 }
 
 export interface SaveProviderInput {
   model: string
-  apiKey?: string
+}
+
+export interface CreateRubricDraftInput {
+  sourceId?: string
+  newVersion?: boolean
 }
 
 export interface DraftScoreReview {
+  rubric: RubricDefinition
   attemptId: string
   submission: Submission
   result: GradingResult

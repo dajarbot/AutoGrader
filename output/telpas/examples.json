@@ -1,0 +1,808 @@
+[
+  {
+    "id": "q18-p11",
+    "question": 18,
+    "page": 11,
+    "responseNumber": 1,
+    "responseText": "my favorite are pizza, burgers,hotdogs,steak and chicken. why i like them? cause \nthey are good",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "q18-p12",
+    "question": 18,
+    "page": 12,
+    "responseNumber": 2,
+    "responseText": "noodles  it becuse it habe the spicy nist of the flaver to eat the leve form spicy to \nnot spicy leve of eat the noodles \nnot  eat the five food for monthe becuse it not halth and it not good for your body. \nyou can eat everday but no a month.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "q18-p13",
+    "question": 18,
+    "page": 13,
+    "responseNumber": 1,
+    "responseText": "Five different foods that i like are tacos, tortas, pozole,menudo, and hamburgers. I \nlike these foods because i like how they taste.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 1
+    },
+    "total": 4
+  },
+  {
+    "id": "q18-p14",
+    "question": 18,
+    "page": 14,
+    "responseNumber": 2,
+    "responseText": "1 My first favorite food is the Lasagna. \n2 My second favorite foods are tacos de buche. \n3 My three favorite food is egg with bacon. \n4 My four favorite food are tacos de barbacoa. \n5 And my five favorite food is Menudo. \n \n2 These foods i like it because has a sabor delicious. \n 3 I think what yes because are my favorite foods and I like it.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "q18-p15",
+    "question": 18,
+    "page": 15,
+    "responseNumber": 1,
+    "responseText": "Five of my favorite foods are tacos,enchiladas verdes,posole,flautas and enchiladas \nrojas.I like these foods becasuse they are really good.I would rather not eat any of \nthese foods for a month becasue I can try other foods.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "q18-p16",
+    "question": 18,
+    "page": 16,
+    "responseNumber": 2,
+    "responseText": "1I will eat pizza becasue its food and, you can add any topic you want\\ \n2 Tacos becasue its good and, add stuff on it \n3Bugers becasue you can add stuffs on it \n4chincke becasue uts good \n5 fries beacuse it can come diffrent ways \n \nI would eat these food every month",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "q18-p17",
+    "question": 18,
+    "page": 17,
+    "responseNumber": 1,
+    "responseText": "My  favorite foods are a steak, ribeye, arroz con leche, maccaroni, eggs.I would \nrather eat these 5 foods for a month because there so nutrisios u can make some \ntoghethere and mix em or u can js eat them plain.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q18-p18",
+    "question": 18,
+    "page": 18,
+    "responseNumber": 2,
+    "responseText": "My five favorite foods are pizza, burritos, enchiladas, noodles, and wings.I would \nrather not eat these foods for a whole month because they are basically junk food \nand aren’t healthy at all, can totally ruin the body and get even more out of shape.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q18-p19",
+    "question": 18,
+    "page": 19,
+    "responseNumber": 3,
+    "responseText": "My to 5 favorite food are pasta,lasanga,bosco chesse sticks and parmasan chicken \nwith marinara sauce and pizza the reson why these are my favorite foods i \nbecause marinara sauce is the best sauce. \n \nI would rather only eat these 5 food every day for a month bacause why wold i not \nwant to eat my favorite food every day for a month.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q18-p20",
+    "question": 18,
+    "page": 20,
+    "responseNumber": 1,
+    "responseText": "• The five favorite foods a chose was burgers ,spaggeti ,pizza ,mexican tacos \n,mexican  burrito  . \n• The reson I like these food is because I enjoy eatting  them the most out of \nany other foods . \n• The reson that rather I chose these food is  because a burger you can get \nanywhere you can even make your own and they all taste diffrent ,in spaggeti \nyou can swich up the sause ,with pizza you can put whatever toping you want \n,mexacan tacos you can also make at your home and they sell them in any \nmexican place ,and lastly a maexican burrito they are very good they have alot \nof flavor when you eat them and they are easy to go find and cook .",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "q18-p21",
+    "question": 18,
+    "page": 21,
+    "responseNumber": 2,
+    "responseText": "My 5 favorite foods are chicken,rice,birria,wings, and pasta.I like these foods \nbecause each of them have a unique and awesome flavor.I would rather eat only \nthese five foods every day for a month because since they all taste differently I \nwont get bored of them.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 2
+    },
+    "total": 7
+  },
+  {
+    "id": "q18-p22",
+    "question": 18,
+    "page": 22,
+    "responseNumber": 3,
+    "responseText": "My five favorite foods are pizza, hot and spicy, tacos,fries, and chile reyenos. the \nresoon why all of these are my favorite food is because they can be spicy, and i \nlove spicy food. I would eat these for five months beacause why not if it was one \nfood for a whole month then no but since its five and i wont get tired of it then no,",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 2
+    },
+    "total": 7
+  },
+  {
+    "id": "q18-p23",
+    "question": 18,
+    "page": 23,
+    "responseNumber": 1,
+    "responseText": "My favorite things to eat are Cheese Pizza, Pasta, Fries, chips, and chocolate chip \ncookies. I love these food items because they are all delicous! I would only eat five \nfoods every day for a month because I can mix them up and eat one dish per day. \nFor example, I can eat pasta on mondays through tuesdays, fries and chips on \nwednesday, Cheese pizza on thursdays through fridays and eat any of these items \non either saturday or sunday with a dessert of chocolate chip cookies.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q18-p24",
+    "question": 18,
+    "page": 24,
+    "responseNumber": 2,
+    "responseText": "My five favorite food are Chiken, Cake, Tacos,  Burgers, and Pizza. They are my \nfavorite food because i grew up eating these foods. I would not eaat these five \nfoods for a monnth becuase its not healthy if i eat all of them for a month. They \nhave to much greese inside of them and most of the foods i mentioned are junk \nfood not really all that healthy if you asked me.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q18-p25",
+    "question": 18,
+    "page": 25,
+    "responseNumber": 3,
+    "responseText": "Five of my favorite foods are pizza,chaumae,eggrolls,Bbq boneless wings and fries. \ni like these foods because they are very tasty and they are not that hard to chew \non because of my braces and i am mostly use to eating all of these foods at home. \nI would rather eat only these five foods every day for a month because i am a very \npicky eater and sometimes i dont like the food at home and prefer to eat \nsomething else and i would also take advantage of eating those five foods because \nsometimes i am craving one of those foods and dont have money to buy my \nfavorite dishes.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q18-p26",
+    "question": 18,
+    "page": 26,
+    "responseNumber": 1,
+    "responseText": "5 of my favorite foods are pozole, pollo poblano,quesabirrias,enchiladas and tacos \nal pastor. i like these foods cause they are not just random junk food you can buy \nat fast food places, these foods you get at restaurants and you can cdook them. i \nwould rather eat the 5 foods for a month because if all of those dishes are my \nfavorite why wouldnt i eat them and yes i may get tired of it but its 5 dishes not \njust one.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q18-p27",
+    "question": 18,
+    "page": 27,
+    "responseNumber": 2,
+    "responseText": "My five favorites foods are haiwain pizza, tacos, chiken, pasta, and ice cream. I \nlike these foods because, tacos is a very traditional Mexican food and i really enjoy \neating them, i like haiwain pizza because for me is so much better than pereroni, \neven though many people always makes fun of me for eating pizza with pineapple, \ni really love eating chiken and pasta because my mom cooks them very delisious \nand lastly ice cream is favorite food in the wole world i really loved it. \nI would rather eat only those five food for a month because i feel like i wouldn’t \nget bored of eating them .",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q18-p28",
+    "question": 18,
+    "page": 28,
+    "responseNumber": 3,
+    "responseText": "One of my favorite foods is shrimp alfredo and i like it because i like shrimp and \nalfreado which makes it better,my other favorite food would be pizza because \nthere is alot of different options to choose so it makes it better not to eat the same \nones everytime you buy,another of my favorite foods is spagetti with beef in it \nbecause its mostly like if you were eating spagetti and meat balls just that its not \nin ball form and i like it because it just taste good,my other favorite food is tacos \nbecause they are good and have alot of different type of stuff you can make a \ntaco,But my big time favorite is fajitas even tho i dont eat it all the time when i do \ni enjoy it very much.I would not eat these food for a month because eating it for \nan entire month only would make me get sick of them.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q18-p29",
+    "question": 18,
+    "page": 29,
+    "responseNumber": 4,
+    "responseText": "My 5 favorite foods got to be Pho because of the amount of vitimins it has, pizza \nbecause, you can make it at home or go to a pizza place and get some quick. \nAnother one i’d say it has to be chips because it’s a light snack you can eat \neverywere, then we also have Fajitas, you can never go wrong with them we \nalways do them in case we got guests coming over,  last one of my favorite food \nare apples because, you can find them in whatever supermarket you’re at and it’s \nalso pretty healthy. \n \nI would rather live with these 5 foods than without because they’re good, and easy \nto get.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q18-p30",
+    "question": 18,
+    "page": 30,
+    "responseNumber": 1,
+    "responseText": "I have a lot of favorite foods but in this esay I will name my top five favorite foods \nand why there my favorit and on the end I will say if I would eat these foods for a \nhole month. My first favorite food is tacos, I like tacos because you can eat them \nat any time and there are many different combinations you can make. My second \nfavorit food is pizza, I like pizza because it taste good and it has different tipes of \npizzas. My third favotite food is caldo de pollo, it is very good and the reason I like \nit is because you can eat it when is very cold and it woud warm you. My fourth \nfavorite food is hamburgers, I like hamburgers because they are very jucy and \nthey tast so good. My last favorite food is a soup called figouly, it is a french soup \nthat tastes very good. I would eat these five foods every day for a month because \nsome of the foods I named are healfty and apart from beean healfty they tastes \nvery good.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q18-p31",
+    "question": 18,
+    "page": 31,
+    "responseNumber": 2,
+    "responseText": "People might say pizza is their favourite food but i disagree pizza is ok but its not \nthat good , I feel like pizza is one of the worst foods. Sometimes i just wished \npeople tried baked potato because i love baked potato it’s easily my favourite food \nand i know people that never tried baked potato are gonna say that pizza is better \nthan baked potato but until they try baked potato they can say their opinion. \nsome of my other favourite foods are wings , tacos , beans ,and chicken. \n \nIf i could pick between eating only my favourite foods for a whole month or not eat \nany of my favourite foods for a whole month i would pick not eat any of my \nfavourite foods for a whole month because while eating your favourite food every \nsingle day might seem nice it will eventually get boring eating the same food.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q18-p32",
+    "question": 18,
+    "page": 32,
+    "responseNumber": 3,
+    "responseText": "What is your top 5 favorite food? My top favorite food are “ Mole, Tacos, Tamales, \nChiles rellenos, and Popusas”. \nFirst of all I like these foods because I enjoy eating my mom’s homemade meals. I \nalso like these because it represents my culture and were I was born, it represents \nwho I am. \nYes, I would rather have to eat only Mole, Tacos, Tamales, chiles rellenos, and \npopusas every day for a entered month. I would because there my favorite food \nand I had always wished and or imagine to eat these meals everyday. It would be \nfun to try and do it some week. On the other hand , yes I would get to eat my \nfavorite meals everyday because, eventually I would get tired of eating the same \nthing over and over. \nIn conclusion, I am still with the idea of eating Mole, Tacos, Tamales, chiles \nrellenos, and popusas everyday because I love these foods, I don’t know what I \nwould do if these meals would not existed.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q18-p33",
+    "question": 18,
+    "page": 33,
+    "responseNumber": 4,
+    "responseText": "If I had to pick five of my favorite foods I would say my; First is tamales; Second \nis tacos; Third is enchaladas; Fourth is burritos; Finally, fifth is quesadillas. I \nchoose these as my favorite foods because I think they are majestic and I’m also  \nhispanic and these foods are apart of my culture. \n \nIf I had to choose between only eating my five favorite foods for a month or not \neat any of these five foods for a month. I would choose only eating my five \nfavorite foods, because I already know I like these foods and if I eat something \nelse I might not like how it tastes. So, I would rather eat something I know I really \nlike then something i’m unsure of liking",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 4,
+      "completeness": 3
+    },
+    "total": 10
+  },
+  {
+    "id": "q18-p34",
+    "question": 18,
+    "page": 34,
+    "responseNumber": 1,
+    "responseText": "First of all, it’s worth noting that my favorite food changes depending on the \nseason. Easiest example will be nobody wants to eat hot, spicy soup at middle of \nsummer at outside. Although generally, my favorites would be any kind of fish \nmeals, steaks, salads, mochi, and fries. \n    With what I said of any kind of fish meals would be my favorite, I generally \nmean so. This goes same with steak that I have listed earlier. Those two are foods \nthat I would eat it anyway, not being specific about which kind of meat or fishes or \ntypes of how it’s cooked. Although for salad, this goes against what I have stated \nfor fishes and steaks. I personally prefer not to have any kind of dressing or sauce, \ndue to sometimes the taste of the dressing types are unberable for me. For mochi, \nI have basically nothing to say, as only think I would be picky about is what I \npreffer how it’s seasoned. Lastly for fries, it’s due to being a fast food that I can \nfind everywhere, and taste generally the same. \n    Although all of what I have listed earlier are my favorited, I would say that \nwould spent month not eating any of those food in month. This is due to nutricion \nbalance, because most of those foods are lacking in nutricion that I would need.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q18-p35",
+    "question": 18,
+    "page": 35,
+    "responseNumber": 2,
+    "responseText": "What are five of my favorite foods ? \n    Five of my favorite food is pizza,tacos,fries,chicken  and meat/steak i like these \nfoods because there just so good and when i eat them they are always good, there \nis never a time when i eat them and dont like them. \n    If im being honest i would rather only have to eat these five foods every day for \na month then not eating them for a month.Why you may ask is because those are \njust my top five favorite foods and sometimes there is never a day where i dont \nwant to eat that because evrytime i order those foods i always finish them because \nthre too good.Another reason is that i would probably not know what other foods \nto eat all of the foods that i eat are good too but there just not as good as my top \nfive favorite foods and i dont know but i feel like most poeple would agree with me \nbut sometimes when your doing something you start thinking about your favorite \nfoods and tell yourself ima eat that after.Thats how i think and feel sometimes. \n    Some poeple may disagree and say they will rather eat different stuff for a \nmonth but not me because i cant go one week without eating one of my favorite \nfoods. \n    And some poeple would agree some wont agree but that will never stop me \nfrom eating my foods.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q18-p36",
+    "question": 18,
+    "page": 36,
+    "responseNumber": 3,
+    "responseText": "Well i have a lot of favorites food , One of them is spaghetti, I love spaghetti is so \ndelicious when my mom cooks it , she cook spaghetti with parmesan cheese is \nvery delicious and i also like fish, The reaon i like fish is because the taste is very \nunique from other types of meat and is also very nutritive for our body siince it \ncontains protein , i like eating fish with rice and plantain is very good , especially \nwhen my mom cooks it , I also like pork chop i usually eat pork chop every week, \nMy mom fries it and then i put barbecue sauce on it is very tasty and sweet , I also \nlike salad since is very healthy for our body and since im a soccer player i need to \nhave a good diet and alimentation, I also like chicken breast is very tasty and it \ndoesn’t have bones in it so i  just have to bite it, I would rather to eat this five \nfoods every day because im already used to eat those foods.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q18-p37",
+    "question": 18,
+    "page": 37,
+    "responseNumber": 4,
+    "responseText": "My top five favorite foods are tacos of any kind, pasta, tortas, caldo de res, and \nchilaquiles. I like to eat any kind of tacos because most of them are really good \nbut I haven’t tried all kinds of them, I love when my mom makes pasta because \neverytime that she makes it she lets us decide from putting either shrimp or \nchicken in it and it tastes good with both. Another on my favorites is tortas \nbecause I  usually get them with fajita and it tastes so good. Caldo de res is also \nreally good because the meat has no bones in it so you don’t get messy trying to \nget the meat off of the bone. Finally, chilaquiles are one of my favorites because it \nis just fried tortillas cut in small triangles, covered in salsa and with cheese on top \nand it is really good especially when its spicy. \n    I would rather eat these five foods everyday for a month, because there are \nsome things you can change about each one of those foods that wouldn’t make \nyou get tired of them. For example in tacos you can change the meat to a different \nkind each time, In the pasta you can either put shrimp or chicken, in the torta you \ncan also just change the meat to a different one each day. For the caldo de res \nand the chilaquiles you can make them spicy on some days.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q18-p38",
+    "question": 18,
+    "page": 38,
+    "responseNumber": 1,
+    "responseText": "I like to eat a lot and I could be a bit picky but I’m always up for the opportunity to \ntaste new things. Although I try them there’s always some dishes that stay as \nfavorites to me. My five favorite foods are Orange chicken with white rice, Carne \nde puerco, Itacates, granola with milk, and last but not least chicken alfredo. This \nfoods are my favoite because some are really simple but have a great taste to me \nthat I just really enjoy while others are made by familar members so not only do \nthey have great taste but they’re also made by love and come with memories. I \nwouldn’t mind eating this food every day for a month but I have to think about my \nhealth and how it will be effected by it. Unless I’m excersing excessively everyday \nor so this foods could make me gain weight. Therefore I’ll chose not to eat them \nfor a month. There’s only one food that I eat on a daily which is the granola with \nmilk so I’m already used to not eating the other dishes very often. Besides for me \nit’s better having your favorite dishes be eating once in a while so you can actually \nenjoy it and not get tired of it so easily.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q18-p39",
+    "question": 18,
+    "page": 39,
+    "responseNumber": 2,
+    "responseText": "When it comes to food I can barely pick anything specific, I absolutely \nlove eating. But if I had to pick five dishes from everything I ever ate I \nwould pick Ceviche, Green Spaghetti, Enfrijoladas, Entomatadas  and \ntacos with eggs and ham. It’s just the best set of dishes i’ve ever had in \nmy life, especially Ceviche. I just love trying out different types of Ceviche \non different restaraunts. But if I could only eat these five meals every day \nfor a month. Or not eat any of them for a month. I’d surely would pick to \nnot eat any of these dishes for a month. If i had them everyday nonstop, I \nwould definetly grow tired of them and I wouldn’t be able to eat them for \na while which is something I definetly don’t want at all. I want to be able \nto eat these dishes whenever im offered to eat them.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q18-p40",
+    "question": 18,
+    "page": 40,
+    "responseNumber": 3,
+    "responseText": "Some of my favorite foods include pizza, enchiladas (Mexican dish), fruits, \nspaghetti, and a good avocado toast in the mornings. I mainly like these foods \nbecause whenever you eat them, it’s like a burst of flavor that you can’t describe \nunless you try it for yourself, especially with enchiladas. Enchiladas just have a \ngood balance of flavor whenever you eat them because of all the different \ningredients and spices it may have. Personally I would rather not eat any of these \nfor a month simply because some of them, like the pizza, enchiladas, and \nspaghetti, are not healthy to eat every day in a row. Although these foods have a \ngreat flavor it is still important to be able to put a limit to what you consume.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q18-p41",
+    "question": 18,
+    "page": 41,
+    "responseNumber": 4,
+    "responseText": "Five of my favorite foods include fried rice, oatmeals, salads, fried eggs and \nprotein bars. I like these foods not only because they are flavorful and savory, but \nalso because of their high nutritional value, as they are rich in proteins, unrefined \ncarbohydrates, fibers and unsaturated fats. \n    I would rather not eat any of these foods for a month mainly because I have \nnumerous alternatives. For instance, eggs can be cooked in many different ways, \nand fried eggs is just one of the ways that I can cook them. I can turn it into a \nhealthy and savory egg omlet. In addition, I cannot endure eating the same type \nof foods everyday for five months because then I start to dislike these foods. For \ninstance, I used to eat homemade pancakes every morning, but after a month, I \nwanted to try new foods for my breakfast because I started to hate the taste of \npancakes.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q28-p43",
+    "question": 28,
+    "page": 43,
+    "responseNumber": 1,
+    "responseText": "This is a math diagram is the number of Vehicles un the United States and explain \nthat have a lot of cars in United States.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "q28-p44",
+    "question": 28,
+    "page": 44,
+    "responseNumber": 2,
+    "responseText": "2019 because the data show us when united state grow the mast number of \nvehicles.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "q28-p45",
+    "question": 28,
+    "page": 45,
+    "responseNumber": 1,
+    "responseText": "How many vechiles that are in the United states \nIn the year 2017 \nThe amount of vechiles would grow higher",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "q28-p46",
+    "question": 28,
+    "page": 46,
+    "responseNumber": 2,
+    "responseText": "1.the number of vehicles in the united states \n2.2019 because the graph is showinf the years and amount \n3. in the next five years its going to be higher",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "q28-p47",
+    "question": 28,
+    "page": 47,
+    "responseNumber": 1,
+    "responseText": "in the graph i can see tha is about number of vehicle in the uited states. \nthe number of vehicles grow in 2019. \nin the next five years i thinck tat its goin to rice up",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "q28-p48",
+    "question": 28,
+    "page": 48,
+    "responseNumber": 2,
+    "responseText": "the nomers has gotted higer within the years \n \nin 2019 the vehicles got higer i konw becases 276.5 is more then 273.6. \n \ni think in the nexts 5 years it wil get higer.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "q28-p49",
+    "question": 28,
+    "page": 49,
+    "responseNumber": 1,
+    "responseText": "Teh number of veihacles built  It grew the popularity in 2019 Ithink the cars will \nsell more becouse each of the years are growing",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q28-p50",
+    "question": 28,
+    "page": 50,
+    "responseNumber": 2,
+    "responseText": "The data shows how there is many more cars in america trought out \nthe years,As the data shows the year that the united states grow the most were \n2017 27,2.5 and 2019 276.5",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q28-p51",
+    "question": 28,
+    "page": 51,
+    "responseNumber": 3,
+    "responseText": "The year the number of vechiles grew was in the 2017’s. \nIn 5 years I think that the number of vechiles in the United States will increase a \nlot more.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "q28-p52",
+    "question": 28,
+    "page": 52,
+    "responseNumber": 1,
+    "responseText": "You could tell from the graph that number of vehicles grew. In the year 2019 was \nthe year that number of vehicles greww the most. I can tell by looking at the \ngraph because thats its highest point. Maybe in the next to years the number of \nvehicles willl continue to grow.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "q28-p53",
+    "question": 28,
+    "page": 53,
+    "responseNumber": 2,
+    "responseText": "The conclusions i can make from the data showing is that its increasing .In the \nyear 2019, the number of vehicles in the United States grew the most. How i know \nits because it shows in the data. Two thing that i think will happen in the next five \nyears is that its going to increase more.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 7
+  },
+  {
+    "id": "q28-p54",
+    "question": 28,
+    "page": 54,
+    "responseNumber": 3,
+    "responseText": "As the years go y there seems be a increasing number of vehicles. During the \nyears 2016-2017 the number of vehicles inthe US grew the most, it states in the \nchart. In the next five years the number of vehicles will stabilize into a straight line \nin the chart or maybe decrease.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 7
+  },
+  {
+    "id": "q28-p55",
+    "question": 28,
+    "page": 55,
+    "responseNumber": 1,
+    "responseText": "I think the use of vehicles are more bigger what in the past becuse the people use \na lots cars for travel on big citys,highways and freeways. in the year 2016 the \nnumbers of the cars was to 268.8 millions but in  the year 2019 the people use \nmore cars and the youngers on 2016 probably in 2019 now they have 20 or 23 \nyears old. \n \nI think in next five years on the future the younger people going to be interesting \non travel more on car or ion the estetic of the new cars or I think too on the future \nthe population go to grow and the people needs more cars for moves around the \nstate or around the country.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q28-p56",
+    "question": 28,
+    "page": 56,
+    "responseNumber": 2,
+    "responseText": "In this graph that is shown is number of vehicles in the United States. \nIt is shown that by 2016 that 268.8 cars were bought and buy 2017, 272.5 were \nbought and many more through 2018 and 2019. In 2019 there were 276.5 cars \nbought and that was the most that were bought in 4 years of the graph. Which \nshows that that is the most amount of cars that were bought in the 4 years of the \ngraph, but throught out these years there will be more cars being bought from \nAmericans. Which will increase the graph for the next  5 years.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q28-p57",
+    "question": 28,
+    "page": 57,
+    "responseNumber": 3,
+    "responseText": "The numbers of vehicles grew the most in 2017.I know this because from 2016 to \n2017 it grew the most,3.7 more.So beacause of this i think the growth may be \nable to stay at a steady 1.5 or higher growth rate.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "q28-p58",
+    "question": 28,
+    "page": 58,
+    "responseNumber": 1,
+    "responseText": "This line graph describes the number of vehicles in the in the United States and \nthe increase per years. The number of cars grew more from 2016 to 2017 then \nany other year since its the one with the highest raise in number. Based on this \ngraph I can conclude that in the next 5 years the number of carrs will continue to \nincrease and there might be more than 300 million by the end of those 5 years.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q28-p59",
+    "question": 28,
+    "page": 59,
+    "responseNumber": 2,
+    "responseText": "The graph is about the “Number of Vehiclesin the United States” we can see that \nthe graph is growing in millions. In 2016 to 2017 the graph shows us that in those \nyears cars grew the most going from 268.8 mill to as high as 272.5 mill. I can \npredict that in 5 years we will have over 300 million cars in the United States and \nalso the more years pass the more cars are made.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q28-p60",
+    "question": 28,
+    "page": 60,
+    "responseNumber": 3,
+    "responseText": "Based on the graph I can conclude that the data is showing the number of vihicles \nin the United States. In 2019 United States had the most grow in vihicles because \nin 2018 United States has 273.6 millions of vihicles and in a year it increased to \n276.5 million. Based on the graph I think in the next 5 years the numbers of cars \nare going to increased even more in the United States which the cars comnpanys \nare going to makes much more money.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q28-p61",
+    "question": 28,
+    "page": 61,
+    "responseNumber": 4,
+    "responseText": "This line graph represents the number of vehicles in the united stated each year. \nThe year that the number of vehicles increased the most is from 2017 due to the \nline graph showing the highest increase from 2016 - 2017. Two things that will \nhappen in the next five years would be the number of vehicles increasing \nmassively in just a couple years and reaching 300 million vehicles",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "q28-p62",
+    "question": 28,
+    "page": 62,
+    "responseNumber": 1,
+    "responseText": "This line graph show the number of vehicle in the United States. Base on the \ngraph, I could conclude that the number of vehicle in the United States has go up \nalot in three year. The number of vehicles in the United States grow the most in \n2017, and I know this this because I has use the number of vehicles in the year of \n2017 subtract the number of vehicles in the year of 2016. Two thing I think will \nhappen in the next five year is the the number of vehicles in the United States will \nkeep rising and more people will have a car to use. I think like this because the \nnumber of vehicles won’t likely to be decrease because they are more accessible \nnow.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q28-p63",
+    "question": 28,
+    "page": 63,
+    "responseNumber": 2,
+    "responseText": "The line graph shows how much cars have been sold through out the years \n2016-2019.A conclusion I can make from this graph is that it’s increasing (which \nmeans it’s going up) in sales.I can also tell that it made a big increase from 2016 \nto 2017 by four million!I think that in the year 2017 the sales grew the most.I \nknow this because it tell you the numbers and it went up more then any other \nyear!Two things I think will happen is the sales will keep going up.Another thing I \nthink will happen is they will sell 300 million car by 2024.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q28-p64",
+    "question": 28,
+    "page": 64,
+    "responseNumber": 3,
+    "responseText": "The line graph shown tells us the number of vehicles in the United States \nthroughout severeal years ranging from 2016 to 2019. \n \nThe year that the number of vehicles in the united states grew the most was the \nyear 2017 showing a 3.7 million increase in vehicles. you can tell this because the \nslope from 2016 going to 2017 is steeper than the others. \n \nBased on the graph I predict that in the next five years the amount of cars in the \nUnited States will continue to grow and wont come to a complete stop because of \nthe rising population in the United States.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 10
+  },
+  {
+    "id": "q28-p65",
+    "question": 28,
+    "page": 65,
+    "responseNumber": 4,
+    "responseText": "In this line graph I can see that this is about number of vehicles in the United \nStates per years. You can see in the title that it says Number Of Vehicles, and in \nthe botom is the years of the vehicles. In the left is the number of vehicles and it’s \ncounting per millions. And the bottom the years its counting per year. You can see \na line in graph that never goes down it’s always going up so that indecates that its \nincresing. In the left numbers of vehicles its couting per 2 millioons. The year with \nmost vehicles is 2019 it has 276.5 million cars thats alot of cars. In the 2019 has \nmore vehicles because the line in the graph is going up and it has 2.9 diffrent of \nthe year 2018. And it is the very last one and it keeps increasing each year. In my \nopinion the next five years is gonna keep increasing beacause each year is \nincreasing. And a noter prediction is that there gonna make more vehicles each \nyear.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "q28-p66",
+    "question": 28,
+    "page": 66,
+    "responseNumber": 1,
+    "responseText": "This line graph shows the Number of Vehicles in the United States through the \nyears 2016 to 2019. Some conclusions made through this graph is that, the line \nwent up due rising facts for getting a car and a need of getting a car. The most \nnumber of vehicles in the United States grew during 2019. I can include this data \nbecause this is the highest point in the graph out of all the years and other dots. \nIn the next five years, it will rise more because of the statments traveleing, jobs, \nand family. These all can lead into someone buying a car. It also due to the rising \nof technology in cars and attracting more people to buy it.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q28-p67",
+    "question": 28,
+    "page": 67,
+    "responseNumber": 2,
+    "responseText": "The amount of vehicles had grown within the past years over time. \nIn the year 2019, there were 276.5 million vehicles. This was the highest amount \nof vehicles over the past years as shown in the graph. \nIn the next 5 years, the amount of vehicles would grow extremely high \nconsiderding the massive jump in only 4 years. But, these large amount of vehicles \ncould increase a number of issues such as traffic, accidents, pollution, and etc.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q28-p68",
+    "question": 28,
+    "page": 68,
+    "responseNumber": 3,
+    "responseText": "Each year from 2016 to 2019 the number have increased.Every year it goes up the \nnumber of vechicels goes up by a bit.The numbers thorugh out the year have gone \nup from 268.8 to 276.5 so it keeps increasing .But the year with the most number \nof vechicles grown was 2019 with 276.5 And the least number of vehicles sold was \nfrom 2016.But over all the numbers from year to year keep progresing. In a \ncouple years it could lower or it can go higher.BUt I think that the numbers would \ncome out more higher because of the new cars that come out. And it the nex five \nyears newer and better cars will come out and many people would buy them.So \nthis can lead up to an increase of vechiles because of new features.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q28-p69",
+    "question": 28,
+    "page": 69,
+    "responseNumber": 4,
+    "responseText": "A conclusion I can make from the data shown is that over the years the number of \nvehicles have increased. The number of vehicles have increased especially \nbetween the year two-thousand-sixteen and the year two-thousand-seventeen. \nBased on the data graph, I believe that the number of vehicles in the united states \nwill increase even more than how they are now, but I alos think that the prices will \nbe even higher since they are bringing out newer and better models, and that will \nbe a possible chance of the number of vehicles in the united states decreasing.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "q28-p70",
+    "question": 28,
+    "page": 70,
+    "responseNumber": 1,
+    "responseText": "My conclusion is that this is the numher of vehicles grown between the year 2016-2019 \nin the year 2016-2017 the number of vehicles grew the most because the number went \nfrom 268.8 to 272.5 whch is the greatest amount there. Based on this graph i can infer \nthat in the next 5 years the numbers will sky rocket since in 2019 th enumber grew up \nto 276.5 and sice we now have better and improved technology we can produce and \nmanufacture better vehicles for the people.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q28-p71",
+    "question": 28,
+    "page": 71,
+    "responseNumber": 2,
+    "responseText": "A conclusion that can be made from the data is that the number of vehicles in the \nUnited States keeps going up every year. In 2017, the number of vehicles \nincreased by 4 million as shown in the graph. I believe that in the next 5 years, \nthe number will only keep increasing as shown in the data. I also believe in the \nnext 5 years the number could go to 290 or 300 million because at the rate that \nthe number keeps going up every year, it’s possible to reach 300 million.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q28-p72",
+    "question": 28,
+    "page": 72,
+    "responseNumber": 3,
+    "responseText": "In this chart we can see the correlation between number of vehicles and the year \ninthe united states.The conclusion that is observable from this data is that the \nnumber of cars per year only increases rather than decrease.The year that the \nbumber of vehicles increased the most was in 2017 since from 2016 the number of \nvehicles increased over four million.In the next five years the growth of vehicles \ncan increase drastucally due to population increase or it can remain constant, but i \ndon’t think the number of vehicles will ever decrease.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "q28-p73",
+    "question": 28,
+    "page": 73,
+    "responseNumber": 4,
+    "responseText": "In the image above, we can see a graph representing the number of vehicles \nthroughout the years 2016-2019. In 2016 we started off with about 268.8 million \nvehicles and the number increased to 276.5 million by the end of 2019. If you look \nclearly, we can see the increase of vehicles throughout the years, this will continue \nto increase as time passes by. We had a major increase of vehicles from 2016 to \n2017, As shown in the graph, it shows the slope of the graph increasing a lot more \nthan the other future years. In the next five years, we would most likely hit the \n290 million vehicles in 2024. Now that there is a lot of roads people dont have \nother choices but to get a form of transportation.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  }
+]
