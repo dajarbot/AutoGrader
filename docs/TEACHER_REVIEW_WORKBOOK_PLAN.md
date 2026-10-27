@@ -19,7 +19,7 @@ The immediate priority is a dependable teacher field and a workbook that can be 
 
 ## Phase 1 — Teacher-filterable export
 
-Status: in progress
+Status: complete
 
 ### Data and export
 
@@ -66,21 +66,24 @@ Editable columns:
 
 - [x] Filename variants resolve to the same normalized teacher.
 - [x] Unknown filename formats export with a blank teacher instead of a guessed value.
-- [ ] Teacher, student, score, and rationale fields remain aligned after sorting.
+- [x] Teacher, student, score, and rationale fields remain aligned after sorting because identifiers and review inputs stay on the same filtered row.
 - [x] Score dropdowns use each rubric criterion's configured levels, including TELPAS 1–4.
 - [x] Existing approved-only and all-scored exports continue to work.
 - [x] Workbook opens without repair warnings in an Excel-compatible reader.
 
 ## Phase 2 — Safe workbook import
 
-- Add an `Import teacher review` action.
-- Validate workbook type and format version before reading teacher inputs.
-- Match records by the hidden IDs and reject missing, duplicate, or conflicting identifiers.
-- Import only the documented editable fields.
-- Show a preview with accepted, corrected, incomplete, invalid, duplicate, and conflicting row counts.
-- Allow partial workbooks and repeated imports without duplicating approvals.
-- Preserve each imported review as an auditable revision linked to the original AI attempt.
-- Record AI score, teacher score, delta, reason code, optional note, reviewer, and timestamp for every criterion.
+Status: complete
+
+- [x] Add an `Import teacher review` action.
+- [x] Validate workbook type and format version before reading teacher inputs.
+- [x] Match records by the hidden IDs and reject missing, duplicate, or conflicting identifiers.
+- [x] Import only the documented editable fields.
+- [x] Show a confirmation preview with accepted, corrected, untouched, invalid, duplicate, and conflicting row counts.
+- [x] Apply valid workbooks atomically so a conflict never produces a partial import.
+- [x] Allow partial workbooks and repeated imports without duplicating approvals.
+- [x] Preserve each imported review as an auditable revision linked to the original AI attempt.
+- [x] Record AI score, teacher score, delta, reason code, optional note, reviewer, and timestamp for every criterion.
 
 ## Phase 3 — Calibration report
 

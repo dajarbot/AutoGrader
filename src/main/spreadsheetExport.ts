@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs'
 import type { SpreadsheetExportData } from '../shared/contracts'
+import { teacherCorrectionReasons, teacherReviewDecisions } from '../shared/teacherReview'
 
 const headerFill = '334A3B'
 const headerBorder = '26392E'
@@ -9,24 +10,6 @@ const editableFill = 'FFF2CC'
 const changedFill = 'FCE4D6'
 const missingFill = 'F4CCCC'
 const reviewWorkbookVersion = '1'
-const reviewDecisions = ['Accept AI', 'Corrected', 'Needs follow-up', 'Unscorable', 'Extraction problem']
-const correctionReasons = [
-  'Too generous',
-  'Too strict',
-  'Limited vocabulary',
-  'Imprecise wording',
-  'Spelling interferes',
-  'Simple sentence range',
-  'Tense control weak',
-  'Grammar interferes',
-  'Missing prompt part',
-  'Insufficient detail',
-  'Weak cohesion',
-  'Genre mismatch',
-  'Copied prompt',
-  'Extraction issue',
-  'Other'
-]
 
 export function buildScoresWorkbook(data: SpreadsheetExportData): ExcelJS.Workbook {
   const workbook = new ExcelJS.Workbook()
@@ -335,7 +318,7 @@ function addTeacherReviewWorksheet(workbook: ExcelJS.Workbook, data: Spreadsheet
     row.getCell(worksheet.getColumn('reviewDecision').number).dataValidation = {
       type: 'list',
       allowBlank: true,
-      formulae: [`"${reviewDecisions.join(',')}"`]
+      formulae: [`"${teacherReviewDecisions.join(',')}"`]
     }
     for (const criterion of data.rubric.criteria) {
       const aiCell = row.getCell(worksheet.getColumn(`ai_${criterion.key}`).number)
@@ -350,7 +333,7 @@ function addTeacherReviewWorksheet(workbook: ExcelJS.Workbook, data: Spreadsheet
       reasonCell.dataValidation = {
         type: 'list',
         allowBlank: true,
-        formulae: [`"${correctionReasons.join(',')}"`]
+        formulae: [`"${teacherCorrectionReasons.join(',')}"`]
       }
       worksheet.addConditionalFormatting({
         ref: teacherCell.address,

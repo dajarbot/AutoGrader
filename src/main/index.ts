@@ -1,23 +1,41 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
-import { join } from 'node:path'
-import { randomBytes } from 'node:crypto'
-import { stat } from 'node:fs/promises'
+import { basename, join } from 'node:path'
+import { createHash, randomBytes } from 'node:crypto'
+import { readFile, stat } from 'node:fs/promises'
 import { AutoGraderDatabase } from './database'
 import { GradingWorker } from './grading'
 import { ProviderStore } from './providerStore'
 import { createServer } from './server'
 import { writeScoresWorkbook } from './spreadsheetExport'
+import { readTeacherReviewWorkbook } from './teacherReviewImport'
 import type { FastifyInstance } from 'fastify'
 import type {
   SelectedPdfFile,
   ServiceConnection,
   SpreadsheetExportResult,
-  SpreadsheetExportScope
+  SpreadsheetExportScope,
+  TeacherReviewImportCounts,
+  TeacherReviewImportResult
 } from '../shared/contracts'
 
 let database: AutoGraderDatabase | undefined
 let service: FastifyInstance | undefined
 let connection: ServiceConnection | undefined
+
+function emptyTeacherReviewCounts(): TeacherReviewImportCounts {
+  return {
+    reviewed: 0,
+    accepted: 0,
+    corrected: 0,
+    needsFollowUp: 0,
+    unscorable: 0,
+    extractionProblems: 0,
+    untouched: 0,
+    invalid: 0,
+    conflicts: 0,
+    duplicates: 0
+  }
+}
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -109,6 +127,113 @@ app.whenReady().then(async () => {
     if (result.canceled || !result.filePath) return { cancelled: true, rowCount: 0 }
     await writeScoresWorkbook(data, result.filePath)
     return { cancelled: false, filePath: result.filePath, rowCount: data.rows.length }
+  })
+  ipcMain.handle('files:import-teacher-reviews', async (
+    _event,
+    assignmentId: string
+  ): Promise<TeacherReviewImportResult> => {
+    if (!database) throw new Error('The local workspace is not ready.')
+    const selected = await dialog.showOpenDialog({
+      title: 'Import completed teacher review workbook',
+      buttonLabel: 'Review workbook',
+      filters: [{ name: 'Excel workbook', extensions: ['xlsx'] }],
+      properties: ['openFile']
+    })
+    if (selected.canceled || !selected.filePaths[0]) {
+      return { ...emptyTeacherReviewCounts(), cancelled: true, applied: false }
+    }
+
+    const filePath = selected.filePaths[0]
+    const fileName = basename(filePath)
+    const workbookHash = createHash('sha256').update(await readFile(filePath)).digest('hex')
+    if (database.hasTeacherReviewImport(workbookHash)) {
+      const counts = emptyTeacherReviewCounts()
+      counts.duplicates = 1
+      await dialog.showMessageBox({
+        type: 'info',
+        title: 'Workbook already imported',
+        message: 'No changes were made.',
+        detail: `${fileName} has already been imported into this workspace.`
+      })
+      return {
+        ...counts,
+        cancelled: false,
+        applied: false,
+        fileName,
+        message: 'This workbook was already imported. No changes were made.'
+      }
+    }
+
+    const preview = await readTeacherReviewWorkbook(
+      filePath,
+      assignmentId,
+      database.teacherReviewImportContext(assignmentId)
+    )
+    if (preview.issues.length) {
+      const issueDetails = preview.issues.slice(0, 8)
+        .map((issue) => `${issue.rowNumber ? `Row ${issue.rowNumber}: ` : ''}${issue.message}`)
+        .join('\n')
+      const more = preview.issues.length > 8 ? `\n…and ${preview.issues.length - 8} more issue(s).` : ''
+      await dialog.showMessageBox({
+        type: 'error',
+        title: 'Teacher review workbook needs correction',
+        message: 'No changes were made.',
+        detail: `${issueDetails}${more}`
+      })
+      return {
+        ...preview.counts,
+        cancelled: false,
+        applied: false,
+        fileName,
+        message: 'Fix the listed workbook issues, then import it again.'
+      }
+    }
+    if (!preview.rows.length) {
+      await dialog.showMessageBox({
+        type: 'info',
+        title: 'No completed reviews found',
+        message: 'No changes were made.',
+        detail: 'Choose a review decision and enter reviewer initials for each row you want to import.'
+      })
+      return {
+        ...preview.counts,
+        cancelled: false,
+        applied: false,
+        fileName,
+        message: 'The workbook did not contain any completed review rows.'
+      }
+    }
+
+    const confirmation = await dialog.showMessageBox({
+      type: 'question',
+      title: 'Apply teacher reviews?',
+      message: `Apply ${preview.counts.reviewed} reviewed row${preview.counts.reviewed === 1 ? '' : 's'} from ${fileName}?`,
+      detail: [
+        `Accept AI: ${preview.counts.accepted}`,
+        `Corrected: ${preview.counts.corrected}`,
+        `Needs follow-up: ${preview.counts.needsFollowUp}`,
+        `Unscorable: ${preview.counts.unscorable}`,
+        `Extraction problem: ${preview.counts.extractionProblems}`,
+        `Untouched rows: ${preview.counts.untouched}`
+      ].join('\n'),
+      buttons: ['Apply reviews', 'Cancel'],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true
+    })
+    if (confirmation.response !== 0) {
+      return { ...preview.counts, cancelled: true, applied: false, fileName }
+    }
+
+    const counts = database.applyTeacherReviewImport(preview, fileName, workbookHash)
+    return {
+      ...counts,
+      cancelled: false,
+      applied: true,
+      fileName,
+      message: `Applied ${counts.reviewed - counts.duplicates} teacher review${counts.reviewed - counts.duplicates === 1 ? '' : 's'}.`,
+      summary: database.gradingQueueSummary(assignmentId)
+    }
   })
 
   await startLocalService()
