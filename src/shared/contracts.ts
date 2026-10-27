@@ -214,8 +214,13 @@ export interface DraftScoreReview {
 export type SpreadsheetExportScope = 'approved' | 'all_scored'
 
 export interface SpreadsheetScoreRow {
+  submissionId: string
+  gradingAttemptId: string
+  teacherName: string
   sourceFileName: string
   studentIndex: number
+  pageNumber: number | null
+  pageEndNumber: number | null
   studentId: string
   studentName: string
   grade: 6 | 7 | 8 | null
@@ -227,8 +232,12 @@ export interface SpreadsheetScoreRow {
 }
 
 export interface SpreadsheetExportData {
+  assignmentId: string
   assignmentName: string
+  questionText: string
+  templateVersionId: string
   templateName: string
+  templateVersion: number
   rubric: RubricDefinition
   rows: SpreadsheetScoreRow[]
 }

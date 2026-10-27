@@ -63,14 +63,30 @@ export const defaultFeedbackSettings: FeedbackSettings = {
 export const defaultExportLayout: ExportLayout = {
   approvedOnlyByDefault: true,
   columns: [
+    'source_file_name',
+    'teacher_name',
+    'student_index',
+    'page_number',
+    'page_end_number',
     'student_id',
     'student_name',
     'grade',
+    'overall_category',
+    'total_points',
+    'minimum_points',
+    'maximum_points',
     'response_text',
     'development_organization_points',
+    'development_organization_minimum',
+    'development_organization_maximum',
+    'development_organization_rubric_level',
+    'development_organization_justification',
     'conventions_points',
-    'total_points',
-    'development_organization_comment',
-    'conventions_comment'
+    'conventions_minimum',
+    'conventions_maximum',
+    'conventions_rubric_level',
+    'conventions_justification',
+    'overall_feedback',
+    'review_status'
   ]
 }

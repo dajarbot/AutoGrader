@@ -25,6 +25,7 @@ import { validateRubric } from '../shared/rubricValidation'
 import { telpasRubric, TELPAS_RUBRIC_KEY } from '../shared/telpasRubric'
 import { originalRubric, ORIGINAL_RUBRIC_KEY } from '../shared/originalRubric'
 import { rubricDraftSchema } from '../shared/rubricSchema'
+import { teacherNameFromSourceFile } from '../shared/teacherName'
 
 interface TemplateRow {
   id: string
@@ -873,13 +874,17 @@ export class AutoGraderDatabase {
         FROM approved_results
       )
       SELECT
+        s.id AS submission_id,
         s.source_file_name,
         s.student_index,
+        s.page_number,
+        s.page_end_number,
         s.student_id,
         s.student_name,
         s.grade,
         COALESCE(s.reviewed_text, s.raw_text, '') AS response_text,
         s.status,
+        CASE WHEN s.status = 'approved' THEN approval.grading_attempt_id ELSE attempt.id END AS grading_attempt_id,
         CASE WHEN s.status = 'approved' THEN approval.result_json ELSE attempt.result_json END AS result_json,
         CASE WHEN s.status = 'approved' THEN approved_attempt.model_name ELSE attempt.model_name END AS model_name,
         approval.approved_at
@@ -893,25 +898,38 @@ export class AutoGraderDatabase {
       WHERE s.assignment_id = ? AND ${statusFilter}
       ORDER BY s.source_file_name COLLATE NOCASE, s.student_index, s.student_name COLLATE NOCASE
     `).all(assignmentId) as Array<{
+      submission_id: string
       source_file_name: string
       student_index: number
+      page_number: number | null
+      page_end_number: number | null
       student_id: string | null
       student_name: string | null
       grade: 6 | 7 | 8 | null
       response_text: string
       status: Submission['status']
+      grading_attempt_id: string | null
       result_json: string | null
       model_name: string | null
       approved_at: string | null
     }>
 
     return {
+      assignmentId: assignment.id,
       assignmentName: assignment.name,
+      questionText: assignment.questionText,
+      templateVersionId: assignment.templateVersionId,
       templateName: assignment.templateName,
+      templateVersion: assignment.templateVersion,
       rubric: template.rubric,
       rows: rows.flatMap((row) => row.result_json ? [{
+        submissionId: row.submission_id,
+        gradingAttemptId: row.grading_attempt_id ?? '',
+        teacherName: teacherNameFromSourceFile(row.source_file_name),
         sourceFileName: row.source_file_name,
         studentIndex: row.student_index,
+        pageNumber: row.page_number,
+        pageEndNumber: row.page_end_number ?? row.page_number,
         studentId: row.student_id ?? '',
         studentName: row.student_name ?? '',
         grade: row.grade,

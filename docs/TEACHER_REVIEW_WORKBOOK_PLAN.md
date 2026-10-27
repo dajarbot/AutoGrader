@@ -23,13 +23,13 @@ Status: in progress
 
 ### Data and export
 
-- [ ] Add a normalized `teacherName` field to exported score rows.
-- [ ] Derive the field from supported source PDF filenames when no stored teacher value exists.
-- [ ] Add `Teacher` near the student identity columns on the existing `Scores` sheet.
-- [ ] Keep the header filter across the full table so coordinators can filter by teacher immediately.
-- [ ] Add an autofilter-ready `Teacher Review` sheet with one row per scored response.
-- [ ] Preserve the existing `Scores` sheet as the detailed, read-only grading record.
-- [ ] Include hidden, locked assignment/submission/attempt identifiers required for safe round-trip import.
+- [x] Add a normalized `teacherName` field to exported score rows.
+- [x] Derive the field from supported source PDF filenames when no stored teacher value exists.
+- [x] Add `Teacher` near the student identity columns on the existing `Scores` sheet.
+- [x] Keep the header filter across the full table so coordinators can filter by teacher immediately.
+- [x] Add an autofilter-ready `Teacher Review` sheet with one row per scored response.
+- [x] Preserve the existing `Scores` sheet as the detailed, read-only grading record.
+- [x] Include hidden assignment/submission/attempt identifiers required for safe round-trip import. Cell locking will be enforced before Phase 2 import ships.
 
 ### Teacher Review columns
 
@@ -53,23 +53,23 @@ Editable columns:
 
 ### Workbook behavior
 
-- [ ] Prefill teacher scores from the AI result while leaving the review decision blank.
-- [ ] Apply score and decision dropdown validation.
-- [ ] Visually distinguish editable cells from locked reference cells.
-- [ ] Highlight changed scores and incomplete corrected rows.
-- [ ] Calculate the teacher total from the teacher criterion scores.
-- [ ] Freeze identity columns and the header row.
-- [ ] Keep filters usable after sorting or copying rows.
-- [ ] Support thousands of rows without one worksheet per teacher.
+- [x] Prefill teacher scores from the AI result while leaving the review decision blank.
+- [x] Apply score and decision dropdown validation.
+- [x] Visually distinguish editable cells from reference cells.
+- [x] Highlight changed scores and incomplete corrected rows.
+- [x] Calculate the teacher total from the teacher criterion scores.
+- [x] Freeze identity columns and the header row.
+- [x] Keep identifiers on the same filtered row so sorting does not break record matching.
+- [x] Keep all teachers in one filterable worksheet instead of creating one worksheet per teacher.
 
 ### Phase 1 verification
 
-- [ ] Filename variants resolve to the same normalized teacher.
-- [ ] Unknown filename formats export with a blank teacher instead of a guessed value.
+- [x] Filename variants resolve to the same normalized teacher.
+- [x] Unknown filename formats export with a blank teacher instead of a guessed value.
 - [ ] Teacher, student, score, and rationale fields remain aligned after sorting.
-- [ ] TELPAS teacher scores accept only 1–4; other rubrics use their configured score ranges.
-- [ ] Existing approved-only and all-scored exports continue to work.
-- [ ] Workbook opens without repair warnings in Excel-compatible readers.
+- [x] Score dropdowns use each rubric criterion's configured levels, including TELPAS 1–4.
+- [x] Existing approved-only and all-scored exports continue to work.
+- [x] Workbook opens without repair warnings in an Excel-compatible reader.
 
 ## Phase 2 — Safe workbook import
 

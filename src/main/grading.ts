@@ -149,9 +149,9 @@ function buildPrompt(item: GradingWorkItem): string {
     'SCORING REQUIREMENTS:',
     '- Return one criterion entry for every rubric criterion using its exact key.',
     '- Use an integer score within each criterion range.',
-    '- Base comments on evidence present in the response.',
-    '- Keep comments concise and teacher-facing.',
-    '- Include one strength and one concrete next step in overallComment.'
+    '- For each criterion comment, write two concise teacher-facing sentences: identify specific evidence or observable features in the response, then explain why that evidence supports the selected rubric level. When useful, state what keeps the response from the next higher level.',
+    '- Do not invent quotations or evidence that is not present in the response.',
+    '- In overallComment, summarize the score rationale, then include one strength and one concrete next step.'
   ].join('\n\n')
 }
 
