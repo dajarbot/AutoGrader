@@ -1,3 +1,4 @@
+import { assessmentSummaryRows } from '../shared/assessmentExport'
 import ExcelJS from 'exceljs'
 import type { SpreadsheetExportData } from '../shared/contracts'
 
@@ -13,7 +14,27 @@ export function buildScoresWorkbook(data: SpreadsheetExportData): ExcelJS.Workbo
   workbook.modified = new Date()
   workbook.subject = `${data.assignmentName} — ${data.templateName}`
 
-  const worksheet = workbook.addWorksheet('Scores', {
+  if ((data.questions?.length ?? 0) > 1) {
+    const summary = workbook.addWorksheet('Student summary', { views: [{ state: 'frozen', ySplit: 1 }] })
+    const maximum = data.rubric.criteria.filter(c => c.includedInTotal).reduce((sum,c) => sum+c.maxScore,0)
+    summary.columns = [
+      { header: 'Student ID', key: 'studentId', width: 18 }, { header: 'Student name', key: 'studentName', width: 26 }, { header: 'Grade', key: 'grade', width: 10 },
+      ...data.questions!.flatMap(q => [
+        { header: `${q.key.toUpperCase()} ${q.title} — status`, key: `${q.key}_status`, width: 30 },
+        ...data.rubric.criteria.map(c => ({ header: `${q.key.toUpperCase()} ${c.name} (${c.minScore ?? 0}–${c.maxScore})`, key: `${q.key}_${c.key}`, width: 22 })),
+        { header: `${q.key.toUpperCase()} total / ${maximum}`, key: `${q.key}_total`, width: 18 }
+      ]),
+      { header: `Combined classroom total / ${maximum * data.questions!.length}`, key: 'combinedTotal', width: 26 },
+      { header: 'Completion / review status', key: 'completion', width: 28 }
+    ]
+    summary.addRows(assessmentSummaryRows(data))
+    summary.getRow(1).height = 48
+    summary.getRow(1).eachCell(cell => { cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF334A3B' } }; cell.alignment = { wrapText: true, vertical: 'middle' } })
+    summary.getColumn('studentId').numFmt = '@'
+    summary.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: summary.columnCount } }
+    summary.eachRow((row, i) => { if (i > 1) { row.height = 38; row.eachCell(cell => { cell.alignment = { wrapText: true, vertical: 'middle' } }) } })
+  }
+  const worksheet = workbook.addWorksheet('Scores' , {
     views: [{ state: 'frozen', xSplit: 4, ySplit: 1, showGridLines: false }]
   })
 
@@ -41,13 +62,15 @@ export function buildScoresWorkbook(data: SpreadsheetExportData): ExcelJS.Workbo
     { header: 'Overall feedback', key: 'overallComment', width: 42 },
     { header: 'Review status', key: 'reviewStatus', width: 15 },
     { header: 'Model used', key: 'modelName', width: 25 },
-    { header: 'Approved at', key: 'approvedAt', width: 21 }
+    { header: 'Approved at', key: 'approvedAt', width: 21 },
+    ...((data.questions?.length ?? 0) > 1 ? [{ header: 'Question', key: 'question', width: 30 }] : [])
   ]
 
   for (const item of data.rows) {
     const criteriaByKey = new Map(item.result.criteria.map((criterion) => [criterion.key, criterion]))
     const rowValues: Record<string, string | number | Date | null> = {
       sourceFileName: item.sourceFileName,
+      question: data.questions?.find(q => q.key === item.questionKey)?.title ?? '',
       studentIndex: item.studentIndex,
       studentId: item.studentId,
       studentName: item.studentName,
@@ -61,7 +84,7 @@ export function buildScoresWorkbook(data: SpreadsheetExportData): ExcelJS.Workbo
     }
     for (const criterion of data.rubric.criteria) {
       const score = criteriaByKey.get(criterion.key)
-      rowValues[`score_${criterion.key}`] = score?.score ?? 0
+      rowValues[`score_${criterion.key}`] = score?.score ?? null
       rowValues[`comment_${criterion.key}`] = score?.comment ?? ''
     }
     worksheet.addRow(rowValues)

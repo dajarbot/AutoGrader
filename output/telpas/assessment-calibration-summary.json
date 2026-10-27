@@ -1,0 +1,280 @@
+{
+  "completedAt": "2026-10-20T23:09:49.406Z",
+  "summary": [
+    {
+      "label": "All held-out responses",
+      "baseline": {
+        "n": 115,
+        "valid": 115,
+        "errors": 0,
+        "exact": 26,
+        "withinOne": 61,
+        "mae": 1.617391304347826,
+        "bias": 0.5391304347826087,
+        "traits": {
+          "vocabulary": {
+            "exact": 59,
+            "mae": 0.5304347826086957,
+            "bias": 0.13043478260869565
+          },
+          "usage": {
+            "exact": 60,
+            "mae": 0.5391304347826087,
+            "bias": 0.33043478260869563
+          },
+          "completeness": {
+            "exact": 54,
+            "mae": 0.5826086956521739,
+            "bias": 0.0782608695652174
+          }
+        }
+      },
+      "references": {
+        "n": 115,
+        "valid": 115,
+        "errors": 0,
+        "exact": 22,
+        "withinOne": 54,
+        "mae": 1.8434782608695652,
+        "bias": 1.2521739130434784,
+        "traits": {
+          "vocabulary": {
+            "exact": 53,
+            "mae": 0.6086956521739131,
+            "bias": 0.33043478260869563
+          },
+          "usage": {
+            "exact": 49,
+            "mae": 0.6521739130434783,
+            "bias": 0.4956521739130435
+          },
+          "completeness": {
+            "exact": 53,
+            "mae": 0.6173913043478261,
+            "bias": 0.4260869565217391
+          }
+        }
+      }
+    },
+    {
+      "label": "Grades 6–7 · explanation/comparison",
+      "baseline": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 4,
+        "withinOne": 14,
+        "mae": 1.6551724137931034,
+        "bias": 0,
+        "traits": {
+          "vocabulary": {
+            "exact": 16,
+            "mae": 0.4482758620689655,
+            "bias": -0.034482758620689655
+          },
+          "usage": {
+            "exact": 15,
+            "mae": 0.5172413793103449,
+            "bias": 0.2413793103448276
+          },
+          "completeness": {
+            "exact": 10,
+            "mae": 0.6896551724137931,
+            "bias": -0.20689655172413793
+          }
+        }
+      },
+      "references": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 6,
+        "withinOne": 11,
+        "mae": 1.8275862068965518,
+        "bias": 0.7241379310344828,
+        "traits": {
+          "vocabulary": {
+            "exact": 12,
+            "mae": 0.6206896551724138,
+            "bias": 0.13793103448275862
+          },
+          "usage": {
+            "exact": 14,
+            "mae": 0.5862068965517241,
+            "bias": 0.3793103448275862
+          },
+          "completeness": {
+            "exact": 14,
+            "mae": 0.6206896551724138,
+            "bias": 0.20689655172413793
+          }
+        }
+      }
+    },
+    {
+      "label": "Grades 6–7 · narrative",
+      "baseline": {
+        "n": 28,
+        "valid": 28,
+        "errors": 0,
+        "exact": 6,
+        "withinOne": 16,
+        "mae": 1.3928571428571428,
+        "bias": 0.17857142857142858,
+        "traits": {
+          "vocabulary": {
+            "exact": 13,
+            "mae": 0.5357142857142857,
+            "bias": -0.03571428571428571
+          },
+          "usage": {
+            "exact": 15,
+            "mae": 0.5,
+            "bias": 0.2857142857142857
+          },
+          "completeness": {
+            "exact": 18,
+            "mae": 0.35714285714285715,
+            "bias": -0.07142857142857142
+          }
+        }
+      },
+      "references": {
+        "n": 28,
+        "valid": 28,
+        "errors": 0,
+        "exact": 7,
+        "withinOne": 18,
+        "mae": 1.2857142857142858,
+        "bias": 0.5714285714285714,
+        "traits": {
+          "vocabulary": {
+            "exact": 15,
+            "mae": 0.4642857142857143,
+            "bias": 0.03571428571428571
+          },
+          "usage": {
+            "exact": 14,
+            "mae": 0.5357142857142857,
+            "bias": 0.39285714285714285
+          },
+          "completeness": {
+            "exact": 18,
+            "mae": 0.35714285714285715,
+            "bias": 0.14285714285714285
+          }
+        }
+      }
+    },
+    {
+      "label": "Grades 8–9 · foods",
+      "baseline": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 9,
+        "withinOne": 15,
+        "mae": 1.8620689655172413,
+        "bias": 1.4482758620689655,
+        "traits": {
+          "vocabulary": {
+            "exact": 14,
+            "mae": 0.6551724137931034,
+            "bias": 0.5862068965517241
+          },
+          "usage": {
+            "exact": 15,
+            "mae": 0.5862068965517241,
+            "bias": 0.4482758620689655
+          },
+          "completeness": {
+            "exact": 13,
+            "mae": 0.6896551724137931,
+            "bias": 0.41379310344827586
+          }
+        }
+      },
+      "references": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 6,
+        "withinOne": 13,
+        "mae": 2.1724137931034484,
+        "bias": 2.103448275862069,
+        "traits": {
+          "vocabulary": {
+            "exact": 12,
+            "mae": 0.7586206896551724,
+            "bias": 0.7586206896551724
+          },
+          "usage": {
+            "exact": 11,
+            "mae": 0.7241379310344828,
+            "bias": 0.5862068965517241
+          },
+          "completeness": {
+            "exact": 11,
+            "mae": 0.7586206896551724,
+            "bias": 0.7586206896551724
+          }
+        }
+      }
+    },
+    {
+      "label": "Grades 8–9 · graph",
+      "baseline": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 7,
+        "withinOne": 16,
+        "mae": 1.5517241379310345,
+        "bias": 0.5172413793103449,
+        "traits": {
+          "vocabulary": {
+            "exact": 16,
+            "mae": 0.4827586206896552,
+            "bias": 0
+          },
+          "usage": {
+            "exact": 15,
+            "mae": 0.5517241379310345,
+            "bias": 0.3448275862068966
+          },
+          "completeness": {
+            "exact": 13,
+            "mae": 0.5862068965517241,
+            "bias": 0.1724137931034483
+          }
+        }
+      },
+      "references": {
+        "n": 29,
+        "valid": 29,
+        "errors": 0,
+        "exact": 3,
+        "withinOne": 12,
+        "mae": 2.0689655172413794,
+        "bias": 1.5862068965517242,
+        "traits": {
+          "vocabulary": {
+            "exact": 14,
+            "mae": 0.5862068965517241,
+            "bias": 0.3793103448275862
+          },
+          "usage": {
+            "exact": 10,
+            "mae": 0.7586206896551724,
+            "bias": 0.6206896551724138
+          },
+          "completeness": {
+            "exact": 10,
+            "mae": 0.7241379310344828,
+            "bias": 0.5862068965517241
+          }
+        }
+      }
+    }
+  ]
+}

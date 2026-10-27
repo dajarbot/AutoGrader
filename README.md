@@ -107,3 +107,23 @@ node scripts/summarize-telpas-evaluation.mjs
 ```
 
 The first command overwrites that model's calibration results, and the second regenerates the report. The checked-in `output/telpas/examples.json` contains the extracted reference responses and labels; the runner sends only the response and task to the model. The graph transcription was visually checked against guide page 42. The app's current request builder, rubric, notes, and result validator are used directly.
+
+
+## Two-question October writing assessment
+
+Choose **New assignment → Assessment format → October TELPAS — two questions**. The preset contains Community Garden (descriptive/expository) and A Surprise at the Park (narrative), the original picture pages, verified text descriptions for the local model, question-specific notes, and editable grade 6/7/8 guidance. Both questions use the same published rubric. Each assessment saves a fixed setup snapshot; **Copy setup** starts a new editable setup while earlier work stays intact.
+
+Grades 6 and 7 use the common 6–7 reference band; grade 8 uses 8–9. There are no invented age bonuses, word-count thresholds, or automatic proficiency conversions. Confirming a student's grade or identity also updates their unscored sibling answer in the same source packet. Scored answers require a new run before changing identity or grade.
+
+Import recognizes explicit `Question 1`, `Q1`, `CR Item # 1`, or exact question-title boundaries, and keeps continuation pages with that answer. Unlabeled/unknown boundaries go to review with separate Q1/Q2 slots and retained source text; page position alone never assigns an answer. Review each question, or mark it **Missing** / **Unreadable** without assigning a zero. Embedded PDF text is supported; handwriting/OCR is not added by this change. A marked missing/unreadable answer is protected from automatic re-extraction.
+
+The review screen has independent question tabs and approval states. Multi-question exports contain a **Student summary** sheet with each question's traits, status and total, plus the detailed **Scores** sheet. The combined classroom total is blank unless every question has a score in the selected export scope. Duplicate answers are flagged instead of silently selecting one. AI draft totals are labeled explicitly.
+
+**Include official reference examples in scoring** is experimental and off by default. It uses separate 6–7 expository/narrative and 8–9 expository demonstrations, saved into the assessment snapshot. No 8–9 narrative demonstrations were supplied. The paired evaluation script excludes all demonstration IDs from both test modes:
+
+```powershell
+node scripts/evaluate-assessment.mjs mistral:latest
+node scripts/summarize-assessment-evaluation.mjs
+```
+
+The paired report is saved under `output/telpas/assessment-calibration.html`. Grade-band labels come from the guides; individual source grades are unavailable, so grade 6 represents band 6–7 and grade 8 represents 8–9. Validation on teacher-scored responses to the actual October prompts remains a separate step once those responses are available.

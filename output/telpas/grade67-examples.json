@@ -1,0 +1,795 @@
+[
+  {
+    "id": "g67-q20-p12",
+    "question": 20,
+    "page": 12,
+    "responseNumber": 1,
+    "responseText": "There are do whit tree and rock there are litle big and midle",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "g67-q20-p13",
+    "question": 20,
+    "page": 13,
+    "responseNumber": 2,
+    "responseText": "To huit for food and fighing,also to build a houes.the differences tools we have now \nis more moder.bad maybe the tools break.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "g67-q20-p14",
+    "question": 20,
+    "page": 14,
+    "responseNumber": 1,
+    "responseText": "the preastorick life for me woud make tools and hunt and make a home to live in \nand make anithing els usable and live a good life .",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "g67-q20-p15",
+    "question": 20,
+    "page": 15,
+    "responseNumber": 2,
+    "responseText": "They was using some tools to chase animals bulds some house and make their \nclose.  \nthe tools that we are making today are not whic rock and some",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 1
+    },
+    "total": 4
+  },
+  {
+    "id": "g67-q20-p16",
+    "question": 20,
+    "page": 16,
+    "responseNumber": 1,
+    "responseText": "(The tool use to kill the animal and controtion frams and homes) (the similar is the \nboht use to controtion homes and frams and kill de animal the differences is the \ntenologia and the tool chame to more good) the tool is improntan because the tool \nhas moch years and is imorintan from the humanos.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "g67-q20-p17",
+    "question": 20,
+    "page": 17,
+    "responseNumber": 2,
+    "responseText": "Well i think the second last one looks like a hammer compared to the rest \nand it looks very old but noew on days it looks nice",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 1
+    },
+    "total": 5
+  },
+  {
+    "id": "g67-q20-p18",
+    "question": 20,
+    "page": 18,
+    "responseNumber": 1,
+    "responseText": "The tools in this image look very different from what we use today, i think that some \ntools may have been used for digging . Nowadays we use other materials like a \nshovel.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q20-p19",
+    "question": 20,
+    "page": 19,
+    "responseNumber": 2,
+    "responseText": "The tools in this image are very pointy,sharp,ugy,and have weird colors.They are \nmosty alike because there all pointy.They are different because they have different \nshapes.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q20-p20",
+    "question": 20,
+    "page": 20,
+    "responseNumber": 3,
+    "responseText": "The tools could be used to defend and to get food.  \nThe life in the prehistoric times could be dangerous in there since there could be \ndangerous animals that are more powerful than the humans, so the humans use the \ntools to defend.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q20-p21",
+    "question": 20,
+    "page": 21,
+    "responseNumber": 1,
+    "responseText": "The tools that are on the picture what is think they are for are for like huntting \nbecause like they are sharp and they look like the can take down a bear and a deer. \nIf i had to compare them to the ones we use on a days then they are diffrent the \nones we have now they look nothng like that at all they are diffrent they don’t have \nstring on the tools that we have now and we don’t  have to use rock. They pretty \nmuch don’t look like are tools at all.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q20-p22",
+    "question": 20,
+    "page": 22,
+    "responseNumber": 2,
+    "responseText": "In the early humans they was making the tools on there own and it was working as \nthey needed to .  \nAnd they was making the tools from rock the hard side was made of a rock .  \nThe hand side that you geating it   \nit was made of wood .  \nAnd they made knife tools that can heat something .  \nWhen they made the tools they needed a food they kill anmiles and they got the \nmeet of animels and they know how to cook it by a time ago.  \nThis is how they made tools and wath they use it for.  \nNow the tools are in the musume and some of top of tools was made of iron and it \nwas important for them so they can get food on it when they kill animles.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q20-p23",
+    "question": 20,
+    "page": 23,
+    "responseNumber": 3,
+    "responseText": "The tools i see in the picture are a knife, and like a hammer and also like a bone in \narrow.The tools could of been used for hunting animals and to keep them safe. The \ndiffrience is that there tools are a big and thick stick with a rock on top of it.The \nsimilaries are that the knifes and hammer look a little of our tool till this day.Probaly \nduring prehistoric they had to hunt and find there own food and had to build there \nown houses and other stuff.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q20-p24",
+    "question": 20,
+    "page": 24,
+    "responseNumber": 1,
+    "responseText": "I belive that the first tool that we see in the picure is for small animals or cutting big \ntree branches, and the seconed tool was for hunting more larger animals like wolfs \nand goats ect, the third tool is for cutting grass and weeds in the ground, the fourth \ntool is a hammer i belive this was for hammering wood in to make their homes or \nshattering tooths to make weapons like spears and knifes, the fith tool is for hunting \ndown larger animals like deers or pigs and cows the sixth tool is to chop some wood \ndown and carve wood all of these tools are useless compared to modern day tools \nhammers can hammer more than wood and nails we dont use spears any more we \nuse hunting things the grass cutter just cut parts of the grass but a modern one cuts \nmore and is more sharper.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q20-p25",
+    "question": 20,
+    "page": 25,
+    "responseNumber": 2,
+    "responseText": "A tool in middle picture is made a rock or iron and it cut became a triagle and have a \nwood is cirle repair iron and cirle wood. Axe is made a wood and rock, all tools in \nthis picture is made iron,wood, and rock. All tools is used for cut a tree, kill animals, \ncut a vegetable,meat,and fish, hammer used for building and repair a anythings is \nbroken. Bomerang is used for relaxed and excersice. the axe use now is different \nwith prehistoric axe because axe of prehistoric is made rock and axe in noe is made \niron.Hammer in prehistoric is made a rock and hammer in now is made a iron. Knife \nin prehistoric is made a iron but middle kinfe is made a wood and knife in now is \nmade iron all knife. In prehistoric, early human is very need al tool in this picture \nuse for life but in now people can’t use this and now people use money buy meat, \nfish, and evething.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q20-p26",
+    "question": 20,
+    "page": 26,
+    "responseNumber": 3,
+    "responseText": "• The spear is basicaly to catch food. \n• The “axe” was used to cut down trees to make a house or firewood. \n• The “hammer” is the one with a rock on the top its used to build. \n• The boomerrang i think it was used to atack prey or something idk \n• and the little ones are for i think to cut open the food they catch \n• the tools we use today in like 2000 and above to those years its called  \na HAMMER, AXE, KNIFE, and the boomer rang was not used to kill it  \nis used to play nowadays \n• and the 2000 and above tools were made nice looking even more  \nsharp like the knife and axe. \n• and the forsure in 1190s idk the tools were made out of rocks and \nsticks. \n• the life from those prehistoric human life was like if the humans were \nthe lions and their prey so they had to catch their food to be able to eat  \nand survive and everything was free \n• and the 2000 and above, life is a little more simple cause now you can \njust go to the store and buy your food and not much of dangers not like u \nhave to run from wolfs or wooly mammuths or eny of that now u just  \nhave to learn how to drive cars to be able to go from one place to another \nand not go fast and crash or u will die.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q20-p27",
+    "question": 20,
+    "page": 27,
+    "responseNumber": 1,
+    "responseText": "I think that these are survival tools that people used back then like \nhammers,arrows,and knives.Todays tools are shiny,black and grey and are stronger \nand made out of metal and tools back then were made out of \nrocks,sticks,crystals,and wood .Something they have in common is they both work \nand were needed at some point or another.I think that during prehistoric times \npeople had to hunt animals for food and had to use those tools to kill the animals \nand can build their homes.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q20-p28",
+    "question": 20,
+    "page": 28,
+    "responseNumber": 2,
+    "responseText": "The tools in the image are fairly small, made of sticks and stones, and they could \nhave been used for protection or to gather materials like wood. Some differencces in \nthe tools back then to the tools now is that one is made of wood and stone while the \nother is made of mostly metal, but some similarities are that both could be used for \nprotection abd both can be used for gathering materials. Finally, life in prehistoric \ntimes could have a lack of materials since they only used sticks and stones.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q20-p29",
+    "question": 20,
+    "page": 29,
+    "responseNumber": 3,
+    "responseText": "It seems llike all these toold are made from little rocks shaped in certain ways and \nthick and strong looking sticks. I would think the small ones with the skick would be \nused to dig. The ones with no stck seems like thing you would throw to defend \nyourself and the one curved with a blade on it seems like to cut things. A lot of \nthese remind me of different things like the tool with the whte rock kind of reminds \nme of a hamer by the way its shaped. If i were to see the one with the blade it \nwould remind me of a knife. It seems to me that back in the prehistoric times they \nhad to improvise a lot sense they didnt have a lot of resources.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q20-p30",
+    "question": 20,
+    "page": 30,
+    "responseNumber": 4,
+    "responseText": "The tools in the picture are, daggers, spears, axes, and hammers, the tools could’ve \nbeen used for hunting. \nThe tools we use today are almost no different to the tools we used back then, the \nsimilarities are that, they are almost all the same tools we use, like the hammer or \nthe knife, but the material they’re made of is different as of now. \nLife in the prehistoric times are mostlikely to be about survival, and hunting, I think \nthat they had to move alot to be able to get food.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q20-p31",
+    "question": 20,
+    "page": 31,
+    "responseNumber": 1,
+    "responseText": "The tools showned in this picute look like they were used over a thousand years. \nThe two tool on top of the picture are small but it look like it has sharp point. I could \nthink that those two were a knife. The reason is they both are small then they are \nsharp. So I could think these two tools were knife. The next tool is curved and made \nof wood. There are not alot of features to know what it is. But it could be a \nboomorang. Since it is also made of wood and is curved. The next tool has a rock \ntrapped into the handle made of wood. It could be and hamer like the one at the \nbottom. Since they have a handle not big and is trapped goood. A present time \nhammer is almost the same. Now the biggest tool in the picture looks like it is \nsharp, and a very big handle. So i could think this is a spear. If it were now it would \nprobaly be made by metal. The last item is a very small and looks polished. I could \nguess these where just very small weapong that could be ver small knife now. So \nwith all of thise I could think that they were able to only able to do limited thing with \nthe reosources because they had weak tool. But could still hunt since they wee able \nto make the rock sharp.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q20-p32",
+    "question": 20,
+    "page": 32,
+    "responseNumber": 2,
+    "responseText": "The tools that were made by early humans in prehistoric times shows that the rocks \nlook pointy and kind of sharp and that those rocks where tied up to a stick but now \nthe tools are not tied up to a stick anymore (some could be) and also the tools \ncreated nowdays are mostly all made of metal and plastic, and not created out of \nrocks and sticks.Those tools were probably for hunting,to fight,or were just used as \nweapons to defend themself.During the prehistoric times, they probably didn’t have \na lot of sources or food so they had to go out in forests or in caves but they didn’t \nhave any weapons. Probably that’s why they created tools. Or some other ways they \nused their tools was to build something like a bed or chairs or they probably even \nused the tools to cook and cut the meat or chiken.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q20-p33",
+    "question": 20,
+    "page": 33,
+    "responseNumber": 3,
+    "responseText": "The tools that I see in the picture looks like it have two knifes, one looks like \nboommarage made out of wood, the next one looks like hammer made out of a \nrock, string, and wood, another one looks like a weapon that you would use to \ndefend yourself, the last tool looks like a better version of a hammer. Next to all the \ntool looks like the different types of material that could have been used for the tools. \nThe tools could have been used for cutting stuff, building stuff, self defens. \nSome knifes look better in the present than the past also like the hammers the \nbommarage and self defens. The similarities that the tools have in common is that \nall tools from back then and present time are used for the same perpose, and the \ndifferentses are that the tools from today are more easy to find and make than the \ntools from the past. \nDurng the prehictoric times, the people must have been looking for the materials to \nmake the tools that they had, they must have had to work hard to frint the \nmaterials and cutting wood string, making the right shape of the stone to make \nthem usefull.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q20-p34",
+    "question": 20,
+    "page": 34,
+    "responseNumber": 4,
+    "responseText": "Some of the tools looks like a nife which i think they probobly use for self protection. \nThere is a hammar which probobly helped the them break woods which could help \nthem cook for their self’s. The hammar they used then compared to know is similar \nby how they design the hammar and how the it looks. The different is that then they \nused rock and woods to make a hammer but know they use metal and woods to \nmake hammer. Life might have been like during prehistoric times wake up eat \nbreakfast go hunting than come back home at lunch time and eat lunch . After lunch \ngo back hunting, hunt until dinner time and when its time for dinner come home and \neat dinner. After dinner spend time with family after that go to sleep and repeat the \nsame thing every day. Life might be hard during prehistoric time because they had \nto make their own tools and their own houses.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q20-p35",
+    "question": 20,
+    "page": 35,
+    "responseNumber": 1,
+    "responseText": "These tool could have been used for hunting and ti cut down trees and to mine rock \nand compared to the tools we use today there are many diffrences like our tools are \nmore modern and more advanced because we use machnes like chansaw’s to cut \ndown trees and use guns to hunt animals and a similaritie is we still use knifes to cut \nfish or to cut the skin of animals.The life during the prehistoric ages where \nprobablydifficut because there was not many humans that were roaming the earth \nand the ice age killed many of them and they didnt have adanced tool that we use \ntoday.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q20-p36",
+    "question": 20,
+    "page": 36,
+    "responseNumber": 2,
+    "responseText": "The tools in this picture look like some weapons for hunting, they can be used for \nhunting animals and the axe may be able to chop some wood, it may be hard but it \nmight be able to do it. These tools are different than our tools because they don’t \nlook as sharp as ours and they don’t look as durable and don’t look like they get the \njob done fast. Life during the prehistoric times might have been rough because \nusing these tools to hunt may have been harder than usual, and getting some wood \nfor houses would be hard, and then while the possibility of being cold and being \nhunted by other animals, so I think it was rough to live during the prehistoric times.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q20-p37",
+    "question": 20,
+    "page": 37,
+    "responseNumber": 3,
+    "responseText": "The 6th tool which has a stick to it could most lickly be  used as a axe, axes are used \nfor cutting trees, meat, ropes, and more. The axes we have now and days are way \ndiffrent from the ones from Prehistoric, because the axes from Prehistoric use a rock \nto be able to cut things, but the axes that we use in 2024 have a silver metal knowed \nas a blade. Another diffrence is that the prehistoric axe looks more handmade, \nbecause of the rope, meanwhile the axes we have now look more machine made. \nDuring the prehistoric times I feel like people would have to hunt for their own food \nthat’s why some animals have gone extict because of them,and the people will have \nto make their own clothes by animals fur.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q20-p38",
+    "question": 20,
+    "page": 38,
+    "responseNumber": 4,
+    "responseText": "In this picture i see that theres tools from the prehistoric time, i see there made of \nwood and stones they have different shapes and different measurements i see that \nthere knives and axe’s even a hammer. The differences between these tools and the \ntools we use today is that they were handmade but now we have machines and a lot \nof features like the axe’s now are way stronger and cool looking the knives theres a \nlot of them different kind’s, like pocket knives,knives to cook or to cut meat,knives \nto hunt,different types of things and tools have been created and modified to be \nbetter and durable. What i think about the life back then is that it was hard you had \nto do all of that in order to survive that’s why i describe it as hard,now we have \nstores to buy food we have tools to buy new modified features to choose from,this \ndraws me to the conclution that all the things from the past in today date are now \nupgraded and more durable.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q20-p39",
+    "question": 20,
+    "page": 39,
+    "responseNumber": 1,
+    "responseText": "This tools are a replica of the ones they used in prehistoric times. I think this tools \nhave been used to catch animals for food and build things out of rock. People often \ncreated this tools and they were really creative. I really love the creativity of \nprehistoric people because in those times they really didn’t have the things we have \nnow. For example, a long time ago they used things made out of rock. They didn’t \nhave technology or internet so this made it really difficult for them. Now in the \npresent we use phones to communicate and have tools made out of different \nmaterials. People a long time ago created their own tools to survive and eat. Now \nwe have machines that do the work for us and even cars. I think life in prehistoric \ntimes was really bad I wouldn’t survive without the things we have now. Life in \nprehistoric times made it really difficult for people but they still survived and that is \nreally incredible in my opinion. I wish people a long time ago could have lived the \nlife we live now.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q20-p40",
+    "question": 20,
+    "page": 40,
+    "responseNumber": 2,
+    "responseText": "Many of the tools have a sharp end to them, meaning they were most likely used for \nhunting. One of the tools looks like a boomerang, meaning it was most likely used \nfor playing. The other tools looks like a hammer, meaning it was most likely used for \nhunting. Unlike before, our told are usually made from something sturdier. Our tools \ntoday are more effecient than before. Similarities I see would be that both the tools \nused today and before both contain sharp ends. Another similarity between today \nand before would be that both tools look similar. Life during prehistoric times would \nhave been very hard due to the tools they had. The tools they had for hunting was \nvery fragile due most of it being made out of wood.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q20-p41",
+    "question": 20,
+    "page": 41,
+    "responseNumber": 3,
+    "responseText": "The very sharp and very creative tools in the picture are different sizes and they are \nreally distinct from each other since they are different sizes, and levels of sharpness. \nIn my prespective I think that these handmade tools were used for hunting animals \nlike deer, buffalo, and coyetes and much more. Also I think that these very creative \ntools were used like knives for cutting animal parts so the could eat them or use \nthem for example they could use their fur for clothes or as blankets. The tools in the \npicture are very different from today’s tools. The tools in the picture differ from \ntoday’s tools because today’s tools are made from more advanced technology and \nthe tools in the picture look like they were made from resources from nature and \nthey look handmade. In my point of view I think that the tools in the picture are \nsimilar from today’s tools because some tools from today have the same use from \ntools in the past. I think that life in the past was rough since many people didn’t \nhave resources that they needed and also had to make things handmade since they \ndidn’t have advanced technology back then.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q20-p42",
+    "question": 20,
+    "page": 42,
+    "responseNumber": 4,
+    "responseText": "The tools in the picture look like spears and axes used for hunting. They also could \nhave been used for weaving clothes, soft as a rug, or catching food and having a \ndelightful feast. Some af the tools look small as an ant, while some look big and \nstrong. Some have sticks so they can be more easily held and some don’t. Most of \nthem are similar by having sharp points as sharp as a knife. The tools we use today \nare very high tech and advanced, we have artificial inteilligence, drills, and air pump \ntoo. The tools shown in the picture look old and rusty. They do not look like they \nwould benefit the modern human. Life in the prehistoric times must have been \ntough. you have to sleep in a poorly built cave with what felt like a million other \npeople crowded together like sardines. You also could not just walk to your local \ngrocery shop and buy food, you had to hunt big, fearless monsters.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q36-p44",
+    "question": 36,
+    "page": 44,
+    "responseNumber": 1,
+    "responseText": "she and he they are, walk and the, 30$ the wa to the, Soers and she, fors she \nmanry he ren! and, he fors the maney.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 1
+    },
+    "total": 3
+  },
+  {
+    "id": "g67-q36-p45",
+    "question": 36,
+    "page": 45,
+    "responseNumber": 1,
+    "responseText": "i was goin to the storwit me sister inmwe was woking in the money of my sister feelt \nout in go in gerit in my sster look in his poquet in the moenywas not there in l go to \nthe part in l see the money in the flor in l go geted",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "g67-q36-p46",
+    "question": 36,
+    "page": 46,
+    "responseNumber": 2,
+    "responseText": "one day two firend weare coats and thier mony is fall and when go a market see a \ndon’t have a mony and the boy back and give a mony an back",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 4
+  },
+  {
+    "id": "g67-q36-p47",
+    "question": 36,
+    "page": 47,
+    "responseNumber": 1,
+    "responseText": "panchito y panchita are walk to the store to buy a food but panchita take away the \nmoney, panchito y pamchita are in the store and panchita remember the money are \nin thre street  and  panchito run and panchito take the money.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 1,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "g67-q36-p48",
+    "question": 36,
+    "page": 48,
+    "responseNumber": 2,
+    "responseText": "First,Gimi and Alex they d’not have eni food at home.Soy they graf they yakes. \nSeken,They go wokeg to the stor.But end the whey to the shor mony fell of of the \ngral yeket poket. \nThe that the stor they gram all the food they need.Soy the Gimi chet’s her poket \nend Gimi said !!oh no!! Alex said:what Gimi and Gimim said: the money fell off of \nmy yaket. \nLast,Alex siad:i go fand the many.Soy he fande end he go bak to the stor.",
+    "expected": {
+      "vocabulary": 1,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 5
+  },
+  {
+    "id": "g67-q36-p49",
+    "question": 36,
+    "page": 49,
+    "responseNumber": 1,
+    "responseText": "first two kids are putting on jackets the they go walking and the girls money fell out \nof her pocket then the girl relized that they fell so the guy runs back for the money.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q36-p50",
+    "question": 36,
+    "page": 50,
+    "responseNumber": 2,
+    "responseText": "At first they wanted to go to the store and they were walking and then they werwe \nabout to pay and she relased that the moneyb fell out.And at last he went running \nto get the money again",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q36-p51",
+    "question": 36,
+    "page": 51,
+    "responseNumber": 3,
+    "responseText": "Sara and her brother max got ready to walke to the stor and will they wher alking to \nthe stor Sara dropd her mony and the sidewalke and she did not know and they got \nall the stufe she nided they wre about to pay she foud out she droped her moy so \nSaras brother went to find the mony and he found it and he went back for thay can \npay for the groseres.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 2
+    },
+    "total": 6
+  },
+  {
+    "id": "g67-q36-p52",
+    "question": 36,
+    "page": 52,
+    "responseNumber": 1,
+    "responseText": "there leaving for school there butting there jackets on so they can go to the store \nand he second one they found money in the side walk and they didnt pick it up \ncause thats being nice cause its not your money and they went to the store and \nthen they needed more money so the boy her brother went running to pick it up and \nthe end .",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q36-p53",
+    "question": 36,
+    "page": 53,
+    "responseNumber": 2,
+    "responseText": "bob and michelle decided to go groecry shopping so the went walkin to the store \nthinking what are they gonna get at the groecry shopping and then the money felled \nfrom michelled pocket sweater when they got to the store bob and michelle went to \ntake their time to go groecry shopping and then went they where about to done \ngroecry shopping and they where about to paind michelled din’t feeled his money in \nthe pocket and then bob when outside and run to look for the money michelled drop \nand bob found it in the sidewalk.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q36-p54",
+    "question": 36,
+    "page": 54,
+    "responseNumber": 3,
+    "responseText": "One boy and One girl were putting on there jacket and aheading out the door and \nwhen they were walking there money fell out there pocket they got to the store and \ngot food when they were about to pay the didnt have the money so the guy went \nback to check if the the money had drop and it did to thr guy pick it up and went to \npay.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 7
+  },
+  {
+    "id": "g67-q36-p55",
+    "question": 36,
+    "page": 55,
+    "responseNumber": 1,
+    "responseText": "One cold day in the winter a brother and sister wanted to go to the store to buy \nsome food the brother opened the door before they went outside they put on there \njacket went they were walked to the store the wind blow the money out of the sister \njacket when they got the to store they were about to pay but sister realize that the \nmoney was not there in her jacket so her brother left her at the store to go look for \nthe money he was ran to back to their when he saw the money on  the ground then \nhe putted up the money and ran back to the store.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q36-p56",
+    "question": 36,
+    "page": 56,
+    "responseNumber": 2,
+    "responseText": "Two sibling go on a walk to th grocerey store the sisters money falls and dhe dosnt \neven realise. They arive at the store they get everything they need and they go to \nthe register but then she realizes she dosnt have any money so then she thinks she \nhad dropped while walking. Then the brother go on he same exact path that they \ntook to get to the grocerey and there he finds the money then he gets the money go \nto the store and pays for the groceries.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 2,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q36-p57",
+    "question": 36,
+    "page": 57,
+    "responseNumber": 3,
+    "responseText": "Me and my brother whanted some snakes and we both had 10$ so we dicited to \nwalk to the store but it was a bit cold out side so we put on are jackits and walket to \nthe store, I ges when we where talking I dropt the money that was in the poket of \nmy jackit because when we got to the store the monye was gone I chekt all my \npokets and the floor of the store but the monye was not ther so my brother started \nto think and sade to retras are steps, so he whent to check the path and the monye \nwas still ther I so happy when he told me and then we baut are snacks and whent \nhome.",
+    "expected": {
+      "vocabulary": 2,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 8
+  },
+  {
+    "id": "g67-q36-p58",
+    "question": 36,
+    "page": 58,
+    "responseNumber": 1,
+    "responseText": "One day there were two siblins and there was a boy and a girl and the boy’s name \nwas John and the girls name was Janne.  \n    When they wock up they foung out that there mother left a message and \nwhanted them to go buy groseries and left them with money so they whent to go \nget there jackets the girl took the money and puted it in her pocket and started \nwalking but as they were walking she did not nothis but the money fell out of her \npocket and when they went to the grosery they had everything exept Janne saide to \nJohn that she might have droped the money on the way here and then he whent to \ngo get it and when he foubg they foung out it was windy and that was maybe the \nsoution and why the money fell off her.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q36-p59",
+    "question": 36,
+    "page": 59,
+    "responseNumber": 2,
+    "responseText": "The two siblings put on there jackets to go to the food market because  they where \nrunning out of food. While on there way to the mrket all the money the sister had \ngone with fell out her pocket. Once they arrived the sister relzed that th money she \nhad brought with her haad fell out her pocket. She was sad and asked her brother  \n“can you go check if it fell on the side walk” the brother replide “yes i will go check” \nfinally the brother went to the sidewalk and there it was on the side walk and he felt \nhappy.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q36-p60",
+    "question": 36,
+    "page": 60,
+    "responseNumber": 3,
+    "responseText": "People:Sibilings \nA girl and her brother dicided to go to the store to buy some food,they put their \nhoodies on and waled to the store.The sister had put the money in her pocket.  \nWhen they where walking they were talking about what they sould get “we should \nget some cookies”.Something they didint realize was that the sister doped the \nmoney!When they were going to pay the sister reached to he rpocket and saw that \nthe money was gone she got sceard tat someone might had of tooken it.The brother \nran back where they were walking and luckley foundthe money.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q36-p61",
+    "question": 36,
+    "page": 61,
+    "responseNumber": 4,
+    "responseText": "Amy and Peter decided to go to a grocery store to buy food becuase they were running \nout and they were hungry, but on their way to the store the money for the groceries \nhad fallen off from Amy’s pocket later on when they had chosed what they  were going \nto buy, Amy realized that she had lost the money she was nervous, she tells Bob to go \nlook for the money, so Bob runs away trying to find where he lost it and he found it in \nthe sidewalk and Bob was relieved .",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 9
+  },
+  {
+    "id": "g67-q36-p62",
+    "question": 36,
+    "page": 62,
+    "responseNumber": 1,
+    "responseText": "These for images seem to show two siblings leaving a house with intentions of going \ngrocery shopping although when the female sibling arrives and tries to pay she \nnotices her money is gone,then the male sibling returns and gets the money that \nthe female sibling dropped.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q36-p63",
+    "question": 36,
+    "page": 63,
+    "responseNumber": 2,
+    "responseText": "Micheal and Suzie are getting ready to go to the store because they need to go get \nsome gorceries.Micheal and Suzie are walking but Suzie doesn’t notice that she \ndropped the money and she kept walking.After that they get to the grocery store \nand get what they need,but Suzie notices that she lost her money so she tells \nMicheal.So Micheal starts running where they were walking and he finds it.After that \nhe returns and gives her the money so they can pay.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q36-p64",
+    "question": 36,
+    "page": 64,
+    "responseNumber": 3,
+    "responseText": "So one day it was bright and sunny outside and my mom send me and my sister to \nthe store and we said yes so we put on our sweaters and headed out. As we were \nwalking money fell out of my sisters pocket. When we got inside the store we \ngrabbed the stuff we needed to grab and when it was our turn to pay my sister \ncouldn’t find her money I asked her were she left it and she said I dont know I think \nit fell out of my pocket so I went running outside and I found it outside just sitting \nthere in the ground waiting to get picked up. So I went back inside gave the money \nto cashier and headed back home.",
+    "expected": {
+      "vocabulary": 3,
+      "usage": 4,
+      "completeness": 3
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q36-p65",
+    "question": 36,
+    "page": 65,
+    "responseNumber": 4,
+    "responseText": "First, Mia and Axel were putting their jackets on because they were going to the \nstore and there some sections cold. Next, Mia’s money fall down from her pocket \nsince she was focused on the conversation she was having with Miguel. Then, when \nthey were going to pay when she perceived  her money wasen’t there she was \nworried because how she was gonna pay what she got. Instantly, Miguel noticed and \nrun outside the store to see if the money was  still there. Finally, with a happy and \nrelief face he run towards the money of Mia.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 3
+    },
+    "total": 10
+  },
+  {
+    "id": "g67-q36-p66",
+    "question": 36,
+    "page": 66,
+    "responseNumber": 1,
+    "responseText": "There was a girl named Janet and a boy named sam, they were getting ready to go \nto the store, as they were walking to the store Janet had dropped the money their \nmom gave her to buy food, when they were finished getting all the stuff they \nneeded she realized that the money was not in her pocket anymore, her brother \nSam had told her to take care of the food while he went to go look for it, as he was \ntracing their steps he found the money on the floor and he went back to the store \nwith his sister Janet, they paid for the food and went hope with smiles on their faces \nlaughing at how scared she had gotten when she checked her pocket and realized \nthe money wasnt there.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q36-p67",
+    "question": 36,
+    "page": 67,
+    "responseNumber": 2,
+    "responseText": "A brother and her sister where making their way to thei rgrocery they put their \njackets on because it was cold outside. Mary had the money she decided to put it on \nher pocket but on their way out Jack and Mary got distracted and didn’t noticed the \nmoney fell out of her pocket .Mary and Jack got to the store they had all their \ngrocery they were about to pay but Mary noticed the money wasnt on her pocket she \ngot scared and told Jack to run as fast as he can to go and chek for it on the track \n.Jack ran fast as the wind and went back fortunaly he found the money it was on the \nfloor as Mary assumed he take a deep breath out and laugh he ran back and told \nMary he found the money Mary felt nerveous and relaxed at they same time .Mary \nand Jack pay their grocery ,on the way home MAry said to jack “remember me to buy \na bag for the money next time” they both started laughing .",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q36-p68",
+    "question": 36,
+    "page": 68,
+    "responseNumber": 3,
+    "responseText": "The two wife and husband had put on the thick coat on because it was windy \noutside, the wife’s coat was purple and the husbands was dark blue. During their \nwalk to the supermaket because they needed to buy food. the money to buy the \ngroceries with flew out of her pocket, but she didn’t notice, they both carelessly \nwalked into the supermarket, the husband was looking at the items on the shelve’s, \nhe noticed that his wife was panicing when she checked her pocket, she said “Oh no! \nI think I droped our groceries money..” she said, the husband told her “Don’t cry \nover spilt milk!” He rushed outside to observe if the money was there fornanetly for \nhim the money was there!",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q36-p69",
+    "question": 36,
+    "page": 69,
+    "responseNumber": 4,
+    "responseText": "Cara and Max are siblings. On Monday evening they had a list of stuff that they had \nto buy that their mom gave to them earlier. When they got dressed there was a long \nway to groscery store. While walking and talking about their day and how it went. \nAccidentally money that they had to buy groceries disapeared from Cara’s jacket, \nbut she didn’t notice.  \nAfter a while when they were about to pay for alk stuff Cara realized that she lost all \nof it. She cheked everywhere in her pockets or jeans. She even walked through the \nstore again but she couldn’t find anything. Then Max realized that the money that \nthey lost are still in the park that they walked through. He had to run as fast as he \ncould until they get blown away by a wind, or somebosy picks them up. But he was \nright on time, and he found everything that.  \nAfter that Max had to run gain to store, so they can pay for all groceries.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 3,
+      "completeness": 4
+    },
+    "total": 11
+  },
+  {
+    "id": "g67-q36-p70",
+    "question": 36,
+    "page": 70,
+    "responseNumber": 1,
+    "responseText": "The people in the picture are twins called Emily and Ethan, when they ran out of \nfood they decided to go to their local store not far from home when Emily went to \nget some of her money because she wnated to buy some chips to eat later while \nwatching a movie. When they were walking to the orange store some of Emily’s \nmoney fell out of her pocket, but Emily nor Ethan noticed. When they got all they \nneeded Emily was deciding what else she could get withher remaining money when \nshe noticed 2 dollars were gone. Emily didn’t know what to do, so Ethan re-did the \nsteps they had taken to go to the store. On the sidewalk he had found her money \nand gave it back to Emily who was able to buy herself a pack of gum.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q36-p71",
+    "question": 36,
+    "page": 71,
+    "responseNumber": 2,
+    "responseText": "Me and my sister were getting ready to get groceries for our mom. I opened the \ndoor but a cold rush of wind bursted into our house. “Guess we better put on our \njackets!” my sister said. We quickly put on our coats and began the walk to the \nsupermarket. Due to the cold weather, we put our hands into the pockets of our \njackets, hoping for some extra warmth. “Eliza, do you have the money for the \ngroceries?” I asked. “Yup! Got it all in my pocket, see?” she said as she pulled out \nthe bills.  \n    Soon, we arrived at the store. All the aisles of food, clothing, and household \nproducts were extremely overwhelming. “Where should we go first?” I said. “Maybe \nwe should go off of the shopping list?” Eliza said. We scanned and searched  for all \nof the products on the list. The cart was growing heavier every minute. “Alright, \ntime to check out.” I said. I got in the checkout line and told my sister to take the \nmoney out. “All of the money is gone! It must’ve fell out of my pocket when we \nwere walking!” Eliza exclaimed. “Don’t worry, stay here. I’ll be right back.” I said.  \n    I dashed out of the store, quickly turning onto the sidewalk. I ran as fast as I \npossibly could, until I finally saw the cash. I picked it up and walked back to pay.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q36-p72",
+    "question": 36,
+    "page": 72,
+    "responseNumber": 3,
+    "responseText": "There was a girl named Samantha who was trying to find food to eat, but she \ncouldnt find any so she grabs some money in her wallet and asked her brother \nnamed Jason if he wanna go to the store with her to get some food “Okay.” Jason \nsaid. “Do you wanna ride or just walk?” Samantha asked. “Let’s just walk.” They \nwalked to the store for 10 minutes talking and laughing. At the store, Samantha got \nsome food. “Where is the money?” Jason asked. “I don’t know, i had it in my pocket \nearlier!” Samantha panicked. “Calm down, I think its just outside” Jason said. Jason \nwent outside and looked for the money after 5 minutes trying to find it, he found it \nat the sidewalk. Jason went back to the store. “I found the money.” Jason said. \n“That’s great! I was worried, I really thought I lost it.” Samantha said. They payed \nfor the food and went back home and cook.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  },
+  {
+    "id": "g67-q36-p73",
+    "question": 36,
+    "page": 73,
+    "responseNumber": 4,
+    "responseText": "One day two siblings, Jack and Sarah, were getting ready to go to the grocery \nstore. Jack was reminding Sarah to bring a jacket since it was cold, and some \nmoney for the groceries. While on their way to the store, Sarah had dropped her \nmoney without noticing, this was because the two siblings were too distracted \ntalking about next weeks test. Once inside the store, the two started reading the list \nof items and grabbed a cart to store the products in. After they had finished \ngathering the items, Jack asked Sarah to get the money to pay the man at the \ncashier. Sarah reaching in her pocket, turned into a ghost white sheet, she had \nrealized that she dropped the money while walking! Jack, asking Sarah if she had \nremembered to grab the money, replied saying that it mustve been dropped on the \nway to the store. So Jack ran the path back home searching for the money, which \nhe finally found. So finally Jack returned with the money, with Sarah waiting in line \nto pay, handed the money to the cashier. Once they had bought the produce, they \nwalked back home with a big sigh of relief.",
+    "expected": {
+      "vocabulary": 4,
+      "usage": 4,
+      "completeness": 4
+    },
+    "total": 12
+  }
+]

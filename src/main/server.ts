@@ -1,3 +1,5 @@
+import { assignmentQuestions } from '../shared/assessment'
+import { assessmentQuestionsSchema } from '../shared/assessmentSchema'
 import { createHash, timingSafeEqual } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { copyFile, mkdir, open } from 'node:fs/promises'
@@ -15,7 +17,9 @@ const assignmentSchema = z.object({
   name: z.string().trim().min(1).max(160),
   grade: z.union([z.literal(6), z.literal(7), z.literal(8)]),
   questionText: z.string().trim().min(1).max(20_000),
-  templateVersionId: z.uuid()
+  templateVersionId: z.uuid(),
+  questions: assessmentQuestionsSchema.optional(),
+  sharedScoringNotes: z.string().max(12000).optional()
 })
 
 const importSchema = z.object({
@@ -26,7 +30,8 @@ const reviewExtractionSchema = z.object({
   studentName: z.string().trim().min(1).max(200),
   studentId: z.string().trim().regex(/^[A-Za-z]?\d{5,15}$/, 'Student ID must contain 5–15 digits, with an optional leading letter.'),
   grade: z.union([z.literal(6), z.literal(7), z.literal(8)]),
-  reviewedText: z.string().trim().min(1, 'Response text is required.').max(250_000)
+  reviewedText: z.string().trim().max(250_000),
+  responseDisposition: z.enum(['response', 'missing', 'unreadable']).optional()
 })
 
 const providerSchema = z.object({
@@ -183,9 +188,9 @@ export function createServer(
       const isLegacyCombinedExtraction = submission.status === 'ready' && submission.pageNumber === null
       if (!needsExtraction && !isLegacyCombinedExtraction) continue
       const group = sourceGroups.get(submission.sourceDocumentHash) ?? []
-      if (group.some((item) => !['imported', 'extracted', 'extraction_problem'].includes(item.status))) continue
+      if (group.some((item) => item.responseDisposition !== 'response' || !['imported', 'extracted', 'extraction_problem'].includes(item.status))) continue
       const current = candidateGroups.get(submission.sourceDocumentHash)
-      if (!current || submission.studentIndex < current.studentIndex) {
+      if (!current || submission.contentHash === submission.sourceDocumentHash || submission.studentIndex < current.studentIndex) {
         candidateGroups.set(submission.sourceDocumentHash, submission)
       }
     }
@@ -263,7 +268,7 @@ export function createServer(
   app.get('/api/assignments/:id/grading/draft', async (request, reply) => {
     const { id } = request.params as { id: string }
     if (!database.getAssignment(id)) return reply.code(404).send({ error: 'Assignment not found.' })
-    return { draft: database.getNextDraftScore(id) }
+    return { draft: database.getNextDraftScore(id, (request.query as { submissionId?: string }).submissionId) }
   })
 
   app.put('/api/submissions/:id/score', async (request, reply) => {
@@ -338,16 +343,15 @@ async function extractOne(
   path: string
 ): Promise<'extracted' | 'extraction_problem'> {
   try {
-    const extractedPages = await extractStudentPdf(path)
+    const source = database.getSubmission(submissionId)!
+    const assignment = database.getAssignment(source.assignmentId)!
+    const extractedPages = await extractStudentPdf(path, assignmentQuestions(assignment))
     const students = extractedPages.map((extracted) => {
-      const blockingIssues = extracted.issues.filter((issue) =>
-        issue.includes('No student response') ||
-        issue.includes('unusually short') ||
-        issue.includes('Student name') ||
-        issue.includes('Student ID') ||
-        issue.includes('marker was not found')
-      )
+      const blockingIssues = extracted.issues
       return {
+        questionKey: extracted.questionKey,
+        studentIndex: extracted.studentIndex,
+        responseDisposition: extracted.responseDisposition,
         studentName: extracted.studentName,
         studentId: extracted.studentId,
         rawText: extracted.rawText,

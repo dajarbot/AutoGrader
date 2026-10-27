@@ -1,3 +1,7 @@
+import { assignmentQuestions, octoberQuestions, octoberSharedNotes } from '../../shared/assessment'
+import { TELPAS_RUBRIC_KEY } from '../../shared/telpasRubric'
+import { QuestionContext, QuestionEditor } from './AssessmentQuestions'
+import type { AssessmentQuestion } from '../../shared/contracts'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { api } from './api'
 import { RubricLibrary, type RubricLibraryHandle } from './RubricLibrary'
@@ -25,6 +29,7 @@ export function App(): React.JSX.Element {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showNewAssignment, setShowNewAssignment] = useState(false)
+  const [assignmentToCopy, setAssignmentToCopy] = useState<Assignment | undefined>()
   const [showAssignmentChooser, setShowAssignmentChooser] = useState(false)
   const [selectedAssignmentId, setSelectedAssignmentId] = useState('')
 
@@ -68,7 +73,8 @@ export function App(): React.JSX.Element {
           <button className="quiet-button" onClick={() => void leaveRubric(() => setScreen(screen === 'templates' ? 'assignment' : 'templates'))}>
             {screen === 'templates' ? 'Back to workflow' : 'Rubric'}
           </button>
-          <button className="primary-button" onClick={() => void leaveRubric(() => setShowNewAssignment(true))}>＋ New assignment</button>
+          {selectedAssignment && <button className="quiet-button" onClick={() => void leaveRubric(() => { setAssignmentToCopy(selectedAssignment); setShowNewAssignment(true) })}>Copy setup</button>}
+          <button className="primary-button" onClick={() => void leaveRubric(() => { setAssignmentToCopy(undefined); setShowNewAssignment(true) })}>＋ New assignment</button>
         </div>
       </header>
       <main className="guided-main">
@@ -98,6 +104,7 @@ export function App(): React.JSX.Element {
       )}
       {showNewAssignment && (
         <NewAssignmentDialog
+          initial={assignmentToCopy}
           templates={templates.filter((template) => template.status === 'published')}
           onClose={() => setShowNewAssignment(false)}
           onCreated={async (assignment) => {
@@ -158,7 +165,7 @@ function AssignmentWorkspace({ assignmentId, templates, onAssignmentActivated }:
   ).length
   const extractionProblems = submissions.filter((submission) => submission.status === 'extraction_problem').length
   const sourcesWithReadyStudents = new Set(
-    submissions.filter((submission) => !['imported', 'extracted', 'extraction_problem'].includes(submission.status)).map((submission) => submission.sourceDocumentHash)
+    submissions.filter((submission) => submission.responseDisposition !== 'response' || !['imported', 'extracted', 'extraction_problem'].includes(submission.status)).map((submission) => submission.sourceDocumentHash)
   )
   const canReextract = submissions.some((submission) =>
     ['imported', 'extracted', 'extraction_problem'].includes(submission.status) &&
@@ -315,7 +322,7 @@ function AssignmentWorkspace({ assignmentId, templates, onAssignmentActivated }:
 
       {stage === 'prepare' && (
         <>
-          <details className="panel question-panel"><summary className="panel-heading compact"><div><h2>Assignment material</h2><p>The question and source text are saved. Expand to inspect them.</p></div><span>Show</span></summary><blockquote>{assignment.questionText}</blockquote></details>
+          <details className="panel question-panel"><summary className="panel-heading compact"><div><h2>Assignment material</h2><p>The question and source text are saved. Expand to inspect them.</p></div><span>Show</span></summary>{assignmentQuestions(assignment).map(q => <QuestionContext key={q.key} question={q} grade={assignment.grade} />)}{assignment.sharedScoringNotes && <p className="preline">{assignment.sharedScoringNotes}</p>}</details>
           <section className="panel submissions-panel">
             <div className="panel-heading"><div><h2>Add and check student work</h2><p>{submissions.length ? `${submissions.length} student responses from ${sourcePdfCount} source PDFs.` : 'Source PDFs are copied locally and split into individual student responses.'}</p></div>{submissions.length > 0 && <div className="panel-actions">
               {cleanCount > 0 && <button className="primary-button" onClick={() => void acceptClean()} disabled={accepting}>{accepting ? 'Advancing…' : `Continue with ${cleanCount} clean`}</button>}
@@ -350,21 +357,23 @@ function AssignmentWorkspace({ assignmentId, templates, onAssignmentActivated }:
       {stage === 'review' && (
         <ScoreReviewStage
           assignmentId={assignmentId}
+          assignment={assignment}
+          submissions={submissions}
           draftCount={queue.draftScored}
           approvedCount={queue.approved}
           scoredCount={queue.draftScored + queue.approved}
           onBack={() => setStage('grade')}
-          onApproved={(summary) => setQueue(summary)}
+          onApproved={(summary) => { setQueue(summary); void api.assignment(assignmentId).then(data => setSubmissions(data.submissions)) }}
         />
       )}
 
-      {selectedSubmission && <ExtractionReviewDialog submission={selectedSubmission} onClose={() => setSelectedSubmission(null)} onSaved={(updated) => { setSubmissions((current) => current.map((item) => item.id === updated.id ? updated : item)); setSelectedSubmission(null); setNotice(`${updated.sourceFileName} is ready for grading.`) }} />}
+      {selectedSubmission && <ExtractionReviewDialog key={selectedSubmission.id} assignment={assignment} siblings={submissions.filter(s => s.sourceDocumentHash === selectedSubmission.sourceDocumentHash && s.studentIndex === selectedSubmission.studentIndex)} onSelect={setSelectedSubmission} submission={selectedSubmission} onClose={() => setSelectedSubmission(null)} onSaved={(updated) => { void api.assignment(assignmentId).then(data => setSubmissions(data.submissions)); setSelectedSubmission(null); setNotice(updated.status === 'ready' ? `${updated.questionKey?.toUpperCase()} is ready for grading.` : `Response marked ${updated.responseDisposition}.`) }} />}
     </div>
   )
 }
 
 function SubmissionTable({ submissions, visibleCount, onMore, onReview }: { submissions: Submission[]; visibleCount: number; onMore: () => void; onReview: (submission: Submission) => void }): React.JSX.Element {
-  return <div className="submission-table"><div className="submission-table-header"><span>File</span><span>Student identity</span><span>Grade</span><span>Status</span><span /></div>{submissions.slice(0, visibleCount).map((submission) => <div className="submission-table-row" key={submission.id}><div className="file-cell"><Icon name="papers" /><span><strong>{submission.sourceFileName}</strong><small>{submission.issueMessage ?? `${submissionPagesLabel(submission)} · Student ${submission.studentIndex}`}</small></span></div><span>{submission.studentName ?? 'Pending extraction'}</span><span>{submission.grade ? `${submission.grade}th` : '—'}</span><span><span className={`status-pill ${submission.status}`}>{submission.status.replace('_', ' ')}</span></span><button className="review-button" onClick={() => onReview(submission)}>Review</button></div>)}{visibleCount < submissions.length && <div className="load-more-row"><span>Showing {visibleCount} of {submissions.length} submissions</span><button className="secondary-button" onClick={onMore}>Show 75 more</button></div>}</div>
+  return <div className="submission-table"><div className="submission-table-header"><span>File</span><span>Student identity</span><span>Grade</span><span>Status</span><span /></div>{submissions.slice(0, visibleCount).map((submission) => <div className="submission-table-row" key={submission.id}><div className="file-cell"><Icon name="papers" /><span><strong>{submission.sourceFileName}</strong><small>{submission.issueMessage ?? `${submissionPagesLabel(submission)} · Student ${submission.studentIndex}`}</small></span></div><span>{submission.studentName ?? 'Pending extraction'}<small className="question-label">{submission.questionKey?.toUpperCase() ?? 'Q1'}</small></span><span>{submission.grade ? `${submission.grade}th` : '—'}</span><span><span className={`status-pill ${submission.status}`}>{submission.status.replace('_', ' ')}</span></span><button className="review-button" disabled={!new Set(['imported', 'extracted', 'extraction_problem', 'ready']).has(submission.status)} onClick={() => onReview(submission)}>Review</button></div>)}{visibleCount < submissions.length && <div className="load-more-row"><span>Showing {visibleCount} of {submissions.length} submissions</span><button className="secondary-button" onClick={onMore}>Show 75 more</button></div>}</div>
 }
 
 function GradingStage({ assignment, templates, switchingRubric, onSelectRubric, provider, queue, total, extractionProblems, starting, onProviderSaved, onStart, onStartAll, onRetry, onStop, onReview }: { assignment: Assignment; templates: TemplateVersion[]; switchingRubric: boolean; onSelectRubric: (id: string) => void; provider: ProviderStatus; queue: GradingQueueSummary; total: number; extractionProblems: number; starting: boolean; onProviderSaved: (provider: ProviderStatus) => void; onStart: () => void; onStartAll: () => void; onRetry: () => void; onStop: () => void; onReview: () => void }): React.JSX.Element {
@@ -437,6 +446,8 @@ function ProviderCard({ provider, onSaved }: { provider: ProviderStatus; onSaved
 
 function ScoreReviewStage({
   assignmentId,
+  assignment,
+  submissions,
   draftCount,
   approvedCount,
   scoredCount,
@@ -444,6 +455,8 @@ function ScoreReviewStage({
   onApproved
 }: {
   assignmentId: string
+  assignment: Assignment
+  submissions: Submission[]
   draftCount: number
   approvedCount: number
   scoredCount: number
@@ -458,10 +471,10 @@ function ScoreReviewStage({
   const [exportNotice, setExportNotice] = useState('')
   const [error, setError] = useState('')
 
-  const loadDraft = async (): Promise<void> => {
+  const loadDraft = async (submissionId?: string): Promise<void> => {
     try {
       setLoading(true); setError('')
-      const response = await api.nextDraftScore(assignmentId)
+      const response = await api.nextDraftScore(assignmentId, submissionId)
       setDraft(response.draft)
       setResult(response.draft?.result ?? null)
     } catch (cause) {
@@ -526,6 +539,8 @@ function ScoreReviewStage({
     <div className="score-review-toolbar"><div><button className="back-button" onClick={onBack}>← Back to grading</button><p><strong>{draft.submission.studentName}</strong> · {submissionPagesLabel(draft.submission)} · {draftCount} drafts awaiting review</p></div><div className="review-toolbar-actions">{exportActions}<div className="score-total"><span>Reviewed total</span><strong>{result.totalScore} / {result.maxTotalScore}</strong></div></div></div>
     {error && <div className="error-banner inline">{error}</div>}
     {exportNotice && <div className="success-banner compact">{exportNotice}</div>}
+    <nav className="question-tabs" aria-label="Student questions">{submissions.filter(s => s.sourceDocumentHash === draft.submission.sourceDocumentHash && s.studentIndex === draft.submission.studentIndex).map(s => <button key={s.id} className={s.id === draft.submission.id ? 'primary-button' : 'secondary-button'} disabled={s.status !== 'draft_scored' || JSON.stringify(result) !== JSON.stringify(draft.result)} onClick={() => void loadDraft(s.id)}>{s.questionKey?.toUpperCase() ?? 'Q1'} · {s.status === 'extraction_problem' ? s.responseDisposition === 'response' ? 'Needs text review' : s.responseDisposition : s.status.replace('_', ' ')}</button>)}</nav>
+    {assignmentQuestions(assignment).filter(q => q.key === (draft.submission.questionKey ?? 'q1')).map(q => <QuestionContext key={q.key} question={q} grade={draft.submission.grade} />)}
     <div className="score-review-grid">
       <StudentPdfPreview key={draft.submission.id} submission={draft.submission} />
       <div className="panel score-editor"><div className="score-editor-heading"><div><p className="eyebrow">AI draft · {draft.modelName}</p><h2>Examine every score</h2></div><span>Nothing exports until approved</span></div>
@@ -538,24 +553,25 @@ function ScoreReviewStage({
   </section>
 }
 
-function ExtractionReviewDialog({
-  submission,
-  onClose,
-  onSaved
-}: {
+function ExtractionReviewDialog({ submission, assignment, siblings, onSelect, onClose, onSaved }: {
   submission: Submission
+  assignment: Assignment
+  siblings: Submission[]
+  onSelect: (submission: Submission) => void
   onClose: () => void
   onSaved: (submission: Submission) => void
 }): React.JSX.Element {
+  const [responseDisposition, setResponseDisposition] = useState<'response' | 'missing' | 'unreadable'>(submission.responseDisposition ?? 'response')
   const [studentName, setStudentName] = useState(submission.studentName ?? '')
   const [studentId, setStudentId] = useState(submission.studentId ?? '')
   const [grade, setGrade] = useState<6 | 7 | 8>(submission.grade ?? 8)
   const [reviewedText, setReviewedText] = useState(submission.reviewedText ?? '')
+  const extractionDirty = reviewedText !== (submission.reviewedText ?? '') || studentName !== (submission.studentName ?? '') || studentId !== (submission.studentId ?? '') || grade !== (submission.grade ?? 8) || responseDisposition !== (submission.responseDisposition ?? 'response')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const submit = async (event: FormEvent): Promise<void> => {
     event.preventDefault()
-    const input: ReviewExtractionInput = { studentName, studentId, grade, reviewedText }
+    const input: ReviewExtractionInput = { studentName, studentId, grade, reviewedText, responseDisposition }
     try {
       setSaving(true)
       setError('')
@@ -574,13 +590,16 @@ function ExtractionReviewDialog({
         <div className="dialog-header">
           <div>
             <p className="eyebrow">Extraction review</p>
-            <h2 id="extraction-review-title">{submission.sourceFileName}</h2>
+            <h2 id="extraction-review-title">{submission.questionKey?.toUpperCase() ?? 'Q1'} · {submission.sourceFileName}</h2>
             <p>Confirm identity and response boundaries without correcting the student’s writing.</p>
           </div>
           <button className="close-button" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <form onSubmit={(event) => void submit(event)}>
+          <nav className="question-tabs" aria-label="Response questions">{siblings.map(s => <button type="button" key={s.id} className={s.id === submission.id ? 'primary-button' : 'secondary-button'} disabled={extractionDirty || !['imported','extracted','extraction_problem','ready'].includes(s.status)} onClick={() => onSelect(s)}>{s.questionKey?.toUpperCase() ?? 'Q1'} · {s.status.replace('_', ' ')}</button>)}</nav>
+          <p>Save this answer before switching questions. Each question is confirmed separately.</p>
+          {assignmentQuestions(assignment).filter(q => q.key === (submission.questionKey ?? 'q1')).map(q => <QuestionContext key={q.key} question={q} grade={grade} />)}
           {submission.issueMessage && <div className="warning-banner">{submission.issueMessage}</div>}
           {error && <div className="form-error">{error}</div>}
           <div className="extraction-review-grid">
@@ -589,11 +608,13 @@ function ExtractionReviewDialog({
               <div className="identity-grid">
                 <label>Student name<input value={studentName} onChange={(event) => setStudentName(event.target.value)} required /></label>
                 <label>Student ID<input value={studentId} onChange={(event) => setStudentId(event.target.value)} required /></label>
-                <label>Grade<select value={grade} onChange={(event) => setGrade(Number(event.target.value) as 6 | 7 | 8)}><option value={6}>6</option><option value={7}>7</option><option value={8}>8</option></select></label>
+                <label>Grade<select aria-label="Grade" value={grade} onChange={(event) => setGrade(Number(event.target.value) as 6 | 7 | 8)}><option value={6}>6</option><option value={7}>7</option><option value={8}>8</option></select></label>
               </div>
+              <label>Response availability<select aria-label="Response availability" value={responseDisposition} onChange={e => setResponseDisposition(e.target.value as typeof responseDisposition)}><option value="response">Response available</option><option value="missing">Missing response — no score</option><option value="unreadable">Unreadable response — no score</option></select></label>
+              <details><summary>Raw extracted text for boundary review</summary><pre className="preline">{submission.rawText}</pre></details>
               <label>
                 Student response
-                <textarea className="response-editor" value={reviewedText} onChange={(event) => setReviewedText(event.target.value)} rows={18} required />
+                <textarea className="response-editor" value={reviewedText} onChange={(event) => setReviewedText(event.target.value)} rows={18} required={responseDisposition === 'response'} />
                 <small>Edit only extraction mistakes or incorrect boundaries. Preserve the student’s spelling, grammar, and wording.</small>
               </label>
               <div className="dialog-actions">
@@ -610,23 +631,28 @@ function ExtractionReviewDialog({
 
 function NewAssignmentDialog({
   templates,
+  initial,
   onClose,
   onCreated
 }: {
   templates: TemplateVersion[]
+  initial?: Assignment
   onClose: () => void
   onCreated: (assignment: Assignment) => Promise<void>
 }): React.JSX.Element {
-  const [name, setName] = useState('')
-  const [grade, setGrade] = useState<6 | 7 | 8>(8)
-  const [questionText, setQuestionText] = useState('')
-  const [templateVersionId, setTemplateVersionId] = useState(templates[0]?.id ?? '')
+  const [assessmentType, setAssessmentType] = useState((initial?.questions?.length ?? 0) > 1 ? 'october' : 'single')
+  const [questions, setQuestions] = useState<AssessmentQuestion[]>(structuredClone(initial?.questions?.length ? initial.questions : octoberQuestions))
+  const [sharedNotes, setSharedNotes] = useState(initial?.sharedScoringNotes ?? octoberSharedNotes)
+  const [name, setName] = useState(initial ? `${initial.name.slice(0,150)} — copy` : '')
+  const [grade, setGrade] = useState<6 | 7 | 8>(initial?.grade ?? 8)
+  const [questionText, setQuestionText] = useState(initial?.questionText ?? '')
+  const [templateVersionId, setTemplateVersionId] = useState(initial?.templateVersionId ?? templates[0]?.id ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const submit = async (event: FormEvent): Promise<void> => {
     event.preventDefault()
-    const input: CreateAssignmentInput = { name, grade, questionText, templateVersionId }
+    const input: CreateAssignmentInput = { name, grade, questionText: assessmentType === 'single' ? questionText : questions.map(q => q.prompt).join('\n\n'), templateVersionId, ...(assessmentType === 'october' ? { questions, sharedScoringNotes: sharedNotes } : {}) }
     try {
       setSaving(true)
       setError('')
@@ -654,6 +680,7 @@ function NewAssignmentDialog({
 
         <form onSubmit={(event) => void submit(event)}>
           {error && <div className="form-error">{error}</div>}
+          <label>Assessment format<select aria-label="Assessment format" value={assessmentType} onChange={e => { setAssessmentType(e.target.value); if (e.target.value === 'october') { setName(name || 'October TELPAS writing'); setTemplateVersionId(templates.find(t => t.templateKey === TELPAS_RUBRIC_KEY)?.id ?? templateVersionId) } }}><option value="single">Single question</option><option value="october">October TELPAS — two questions</option></select></label>
           <label>
             Assignment name
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Grade 8 — Unit 1 Midcycle" required />
@@ -662,7 +689,7 @@ function NewAssignmentDialog({
           <div className="form-row">
             <label>
               Grade
-              <select value={grade} onChange={(event) => setGrade(Number(event.target.value) as 6 | 7 | 8)}>
+              <select aria-label="Grade" value={grade} onChange={(event) => setGrade(Number(event.target.value) as 6 | 7 | 8)}>
                 <option value={6}>6th grade</option>
                 <option value={7}>7th grade</option>
                 <option value={8}>8th grade</option>
@@ -678,7 +705,7 @@ function NewAssignmentDialog({
             </label>
           </div>
 
-          <label>
+          {assessmentType === 'single' ? <label>
             Exact writing question
             <textarea
               value={questionText}
@@ -688,7 +715,7 @@ function NewAssignmentDialog({
               required
             />
             <small>This will be reviewed alongside the source packet before grading begins.</small>
-          </label>
+          </label> : <><p>Both prompts are shared across grades 6–8. The selected grade supplies the default; individual grades can be confirmed during extraction review. This assessment saves a fixed snapshot of the prompts and guidance.</p><QuestionEditor questions={questions} onChange={setQuestions} /><label>Shared scoring notes<textarea value={sharedNotes} maxLength={12000} rows={4} onChange={e => setSharedNotes(e.target.value)} /></label></>}
 
           <div className="dialog-actions">
             <button type="button" className="secondary-button" onClick={onClose}>Cancel</button>

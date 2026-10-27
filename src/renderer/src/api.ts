@@ -102,8 +102,8 @@ export const api = {
     request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading/cancel`, {
       method: 'POST', body: JSON.stringify({})
     }),
-  nextDraftScore: (assignmentId: string): Promise<{ draft: DraftScoreReview | null }> =>
-    request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading/draft`),
+  nextDraftScore: (assignmentId: string, submissionId?: string): Promise<{ draft: DraftScoreReview | null }> =>
+    request(`/api/assignments/${encodeURIComponent(assignmentId)}/grading/draft${submissionId ? `?submissionId=${encodeURIComponent(submissionId)}` : ''}`),
   approveScore: (submissionId: string, result: Pick<GradingResult, 'criteria' | 'overallComment'>): Promise<{ result: GradingResult; summary: GradingQueueSummary }> =>
     request(`/api/submissions/${encodeURIComponent(submissionId)}/score`, {
       method: 'PUT', body: JSON.stringify(result)

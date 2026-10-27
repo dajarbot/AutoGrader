@@ -72,11 +72,26 @@ export interface TemplateVersion {
   publishedAt: string | null
 }
 
+export interface AssessmentQuestion {
+  key: string
+  title: string
+  prompt: string
+  genre: 'expository' | 'narrative' | 'other'
+  stimulusDescription: string
+  referenceExamples?: boolean
+  referenceContext?: { '6': string; '7': string; '8': string }
+  stimulusAsset?: 'community-garden' | 'park-story'
+  scoringNotes: string
+  gradeNotes: { '6': string; '7': string; '8': string }
+}
+
 export interface Assignment {
   id: string
   name: string
   grade: 6 | 7 | 8 | null
   questionText: string
+  questions?: AssessmentQuestion[]
+  sharedScoringNotes?: string
   status: AssignmentStatus
   templateVersionId: string
   templateName: string
@@ -103,12 +118,16 @@ export interface CreateAssignmentInput {
   name: string
   grade: 6 | 7 | 8
   questionText: string
+  questions?: AssessmentQuestion[]
+  sharedScoringNotes?: string
   templateVersionId: string
 }
 
 export interface Submission {
   id: string
   assignmentId: string
+  questionKey?: string
+  responseDisposition?: 'response' | 'missing' | 'unreadable'
   sourcePath: string
   sourceFileName: string
   contentHash: string
@@ -135,6 +154,7 @@ export interface ExtractionBatchResult {
 }
 
 export interface ReviewExtractionInput {
+  responseDisposition?: 'response' | 'missing' | 'unreadable'
   studentName: string
   studentId: string
   grade: 6 | 7 | 8
@@ -214,6 +234,8 @@ export interface DraftScoreReview {
 export type SpreadsheetExportScope = 'approved' | 'all_scored'
 
 export interface SpreadsheetScoreRow {
+  questionKey?: string
+  sourceDocumentHash?: string
   sourceFileName: string
   studentIndex: number
   studentId: string
@@ -230,6 +252,8 @@ export interface SpreadsheetExportData {
   assignmentName: string
   templateName: string
   rubric: RubricDefinition
+  questions?: AssessmentQuestion[]
+  submissions?: Submission[]
   rows: SpreadsheetScoreRow[]
 }
 

@@ -147,3 +147,49 @@ export function parseStudentPages(pages: Array<{ text: string; num: number }>): 
     return { ...parsed, rawText: group.raw.join('\n\n'), pageNumber: group.start, pageEndNumber: group.end }
   })
 }
+
+// Multi-question packets are split only on explicit item labels or exact titles.
+// Student identity remains the outer boundary; page breaks never imply a question.
+export function parseAssessmentPages(pages: Array<{ text: string; num: number }>, questions: Array<{ key: string; title: string }>): Array<ParsedStudentPages & { questionKey: string; studentIndex: number; responseDisposition: 'response' | 'missing' }> {
+  const groups = parseStudentPages(pages)
+  if (questions.length <= 1) return groups.map((g, i) => ({ ...g, questionKey: questions[0]?.key ?? 'q1', studentIndex: i + 1, responseDisposition: 'response' }))
+  return groups.flatMap((group, studentIndex) => {
+    const chunks = new Map<string, { lines: string[]; start: number; end: number }>()
+    let active: string | null = null
+    let ambiguous = false
+    for (const page of pages.filter(p => p.num >= group.pageNumber && p.num <= group.pageEndNumber)) {
+      const lines = cleanPage(page.text).split('\n')
+      for (const [index, line] of lines.entries()) {
+        const heading = line.trim().match(/^(?:CR\s+Item\s*#\s*|Question\s*|Q\s*)(\d+)\s*(?:$|[.):-]|-?\s*Possible Points:)/i)
+        const title = questions.find(q => q.title.toLowerCase() === line.trim().toLowerCase())
+        if (heading || title) {
+          const key = title?.key ?? `q${Number(heading![1])}`
+          if (!questions.some(q => q.key === key)) { ambiguous = true; active = null; continue }
+          if (active && active !== key && chunks.has(key)) ambiguous = true
+          active = key
+          if (!chunks.has(key)) chunks.set(key, { lines: [], start: page.num, end: page.num })
+          continue
+        }
+        if (index < 5 && isIdentityLine(line)) continue
+        if (active) {
+          const chunk = chunks.get(active)!
+          // A repeated response marker is furniture; preserve the first marker.
+          if (/^\s*student\s+response\s*:?\s*$/i.test(line) && chunk.lines.some(l => /^\s*student\s+response\b/i.test(l))) continue
+          chunk.lines.push(line); chunk.end = page.num
+        } else if (/^\s*student\s+response\b/i.test(line)) ambiguous = true
+      }
+    }
+    return questions.map(question => {
+      const chunk = chunks.get(question.key)
+      const identity = `Student Name: ${group.studentName ?? ''}\nStudent ID: ${group.studentId ?? ''}\n`
+      const parsed = parseStudentText(identity + (chunk?.lines.join('\n') ?? ''))
+      const issues = [...parsed.issues]
+      if (!chunk) issues.push(`Question ${question.key} was not identified. Review the source and enter this answer, or mark it missing/unreadable.`)
+      if (ambiguous) issues.push('Ambiguous question boundaries: review both answers before grading.')
+      return { ...parsed, studentName: group.studentName, studentId: group.studentId,
+        responseText: chunk ? parsed.responseText : '', issues,
+        rawText: group.rawText, pageNumber: chunk?.start ?? group.pageNumber, pageEndNumber: chunk?.end ?? group.pageEndNumber,
+        questionKey: question.key, studentIndex: studentIndex + 1, responseDisposition: 'response' as const }
+    })
+  })
+}

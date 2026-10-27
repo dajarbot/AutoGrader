@@ -1,19 +1,22 @@
 import { readFile } from 'node:fs/promises'
 import { PDFParse } from 'pdf-parse'
-import { parseStudentPages, type ParsedStudentText } from '../shared/parseStudentText'
+import { parseAssessmentPages, type ParsedStudentText } from '../shared/parseStudentText'
 
 export interface ExtractedStudentPage extends ParsedStudentText {
+  questionKey?: string
+  studentIndex?: number
+  responseDisposition?: 'response' | 'missing'
   rawText: string
   pageNumber: number
   pageEndNumber: number
 }
 
-export async function extractStudentPdf(path: string): Promise<ExtractedStudentPage[]> {
+export async function extractStudentPdf(path: string, questions: Array<{ key: string; title: string }> = [{ key: 'q1', title: 'Question 1' }]): Promise<ExtractedStudentPage[]> {
   const data = await readFile(path)
   const parser = new PDFParse({ data })
   try {
     const result = await parser.getText()
-    return parseStudentPages(result.pages)
+    return parseAssessmentPages(result.pages, questions)
   } finally {
     await parser.destroy()
   }

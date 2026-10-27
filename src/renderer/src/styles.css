@@ -364,3 +364,10 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 
 .rubric-notes textarea { width: 100%; min-height: 160px; resize: vertical; }
 .rubric-notes { margin: 20px 0; }
+.question-context { margin: 16px 0; padding: 16px; background: #f5f6f1; border: 1px solid #dce0d7; border-radius: 12px; }
+.question-context summary { cursor: pointer; font-weight: 600; }
+.question-picture { display: block; max-width: 100%; max-height: 650px; object-fit: contain; margin: 16px auto; }
+.question-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.question-label { display: block; font-weight: 600; color: #596c48; }
+.question-editors fieldset { border: 1px solid #dce0d7; border-radius: 12px; margin: 18px 0; padding: 16px; }
+.question-editors legend { font-weight: 600; }
