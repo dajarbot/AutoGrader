@@ -468,6 +468,7 @@ function ScoreReviewStage({
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [exporting, setExporting] = useState<SpreadsheetExportScope | null>(null)
+  const [importingReviews, setImportingReviews] = useState(false)
   const [exportNotice, setExportNotice] = useState('')
   const [error, setError] = useState('')
 
@@ -526,10 +527,28 @@ function ScoreReviewStage({
     } finally { setExporting(null) }
   }
 
+  const importTeacherReviews = async (): Promise<void> => {
+    try {
+      setImportingReviews(true); setError(''); setExportNotice('')
+      const imported = await window.autoGrader.importTeacherReviews(assignmentId)
+      if (imported.cancelled) return
+      if (!imported.applied) {
+        setExportNotice(imported.message ?? 'No teacher reviews were applied.')
+        return
+      }
+      if (imported.summary) onApproved(imported.summary)
+      setExportNotice(imported.message ?? `Applied ${imported.reviewed} teacher reviews.`)
+      await loadDraft()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'The teacher review workbook could not be imported.')
+    } finally { setImportingReviews(false) }
+  }
+
   const exportActions = <div className="export-actions">
-    <div><strong>Excel spreadsheet</strong><span>Approved results are the safe default. “All scored” labels AI drafts.</span></div>
-    <button className="secondary-button" onClick={() => void exportScores('approved')} disabled={!approvedCount || exporting !== null}>{exporting === 'approved' ? 'Exporting…' : `Export approved (${approvedCount})`}</button>
-    <button className="secondary-button draft-export" onClick={() => void exportScores('all_scored')} disabled={!scoredCount || exporting !== null}>{exporting === 'all_scored' ? 'Exporting…' : `Export all scored (${scoredCount})`}</button>
+    <div><strong>Teacher review workbook</strong><span>Export scored work, then import the completed review sheet here.</span></div>
+    <button className="secondary-button" onClick={() => void importTeacherReviews()} disabled={importingReviews || exporting !== null}>{importingReviews ? 'Checking workbook…' : 'Import teacher review'}</button>
+    <button className="secondary-button" onClick={() => void exportScores('approved')} disabled={!approvedCount || exporting !== null || importingReviews}>{exporting === 'approved' ? 'Exporting…' : `Export approved (${approvedCount})`}</button>
+    <button className="secondary-button draft-export" onClick={() => void exportScores('all_scored')} disabled={!scoredCount || exporting !== null || importingReviews}>{exporting === 'all_scored' ? 'Exporting…' : `Export all scored (${scoredCount})`}</button>
   </div>
 
   if (loading) return <section className="panel review-loading"><span /><p>Opening the next scored response…</p></section>

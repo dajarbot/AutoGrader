@@ -236,8 +236,13 @@ export type SpreadsheetExportScope = 'approved' | 'all_scored'
 export interface SpreadsheetScoreRow {
   questionKey?: string
   sourceDocumentHash?: string
+  submissionId: string
+  gradingAttemptId: string
+  teacherName: string
   sourceFileName: string
   studentIndex: number
+  pageNumber: number | null
+  pageEndNumber: number | null
   studentId: string
   studentName: string
   grade: 6 | 7 | 8 | null
@@ -249,8 +254,12 @@ export interface SpreadsheetScoreRow {
 }
 
 export interface SpreadsheetExportData {
+  assignmentId: string
   assignmentName: string
+  questionText: string
+  templateVersionId: string
   templateName: string
+  templateVersion: number
   rubric: RubricDefinition
   questions?: AssessmentQuestion[]
   submissions?: Submission[]
@@ -261,4 +270,58 @@ export interface SpreadsheetExportResult {
   cancelled: boolean
   filePath?: string
   rowCount: number
+}
+
+export type TeacherReviewDecision =
+  | 'Accept AI'
+  | 'Corrected'
+  | 'Needs follow-up'
+  | 'Unscorable'
+  | 'Extraction problem'
+
+export interface TeacherReviewCriterionInput {
+  key: string
+  aiScore: number
+  teacherScore: number
+  reason: string
+}
+
+export interface TeacherReviewImportRow {
+  rowNumber: number
+  submissionId: string
+  gradingAttemptId: string
+  reviewerInitials: string
+  decision: TeacherReviewDecision
+  teacherNote: string
+  criteria: TeacherReviewCriterionInput[]
+}
+
+export interface TeacherReviewImportCounts {
+  reviewed: number
+  accepted: number
+  corrected: number
+  needsFollowUp: number
+  unscorable: number
+  extractionProblems: number
+  untouched: number
+  invalid: number
+  conflicts: number
+  duplicates: number
+}
+
+export interface TeacherReviewImportPreview {
+  assignmentId: string
+  templateVersionId: string
+  workbookVersion: string
+  rows: TeacherReviewImportRow[]
+  counts: TeacherReviewImportCounts
+  issues: Array<{ rowNumber: number | null; kind: 'invalid' | 'conflict' | 'duplicate'; message: string }>
+}
+
+export interface TeacherReviewImportResult extends TeacherReviewImportCounts {
+  cancelled: boolean
+  applied: boolean
+  fileName?: string
+  message?: string
+  summary?: GradingQueueSummary
 }

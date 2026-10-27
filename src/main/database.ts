@@ -16,6 +16,8 @@ import type {
   SpreadsheetExportData,
   SpreadsheetExportScope,
   Submission,
+  TeacherReviewImportCounts,
+  TeacherReviewImportPreview,
   TemplateVersion
 } from '../shared/contracts'
 import {
@@ -28,6 +30,7 @@ import { validateRubric } from '../shared/rubricValidation'
 import { telpasRubric, TELPAS_RUBRIC_KEY } from '../shared/telpasRubric'
 import { originalRubric, ORIGINAL_RUBRIC_KEY } from '../shared/originalRubric'
 import { rubricDraftSchema } from '../shared/rubricSchema'
+import { teacherNameFromSourceFile } from '../shared/teacherName'
 
 interface TemplateRow {
   id: string
@@ -195,12 +198,42 @@ export class AutoGraderDatabase {
         UNIQUE (submission_id, revision)
       );
 
+      CREATE TABLE IF NOT EXISTS teacher_review_imports (
+        id TEXT PRIMARY KEY,
+        assignment_id TEXT NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,
+        source_file_name TEXT NOT NULL,
+        workbook_hash TEXT NOT NULL UNIQUE,
+        reviewed_row_count INTEGER NOT NULL CHECK (reviewed_row_count >= 0),
+        imported_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS teacher_review_events (
+        id TEXT PRIMARY KEY,
+        import_id TEXT NOT NULL REFERENCES teacher_review_imports(id) ON DELETE CASCADE,
+        submission_id TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
+        grading_attempt_id TEXT NOT NULL REFERENCES grading_attempts(id),
+        row_number INTEGER NOT NULL CHECK (row_number > 1),
+        decision TEXT NOT NULL CHECK (decision IN (
+          'Accept AI', 'Corrected', 'Needs follow-up', 'Unscorable', 'Extraction problem'
+        )),
+        reviewer_name TEXT NOT NULL,
+        teacher_note TEXT NOT NULL,
+        criterion_feedback_json TEXT NOT NULL,
+        ai_result_json TEXT NOT NULL,
+        teacher_result_json TEXT,
+        event_fingerprint TEXT NOT NULL UNIQUE,
+        created_at TEXT NOT NULL,
+        UNIQUE (import_id, submission_id)
+      );
+
       CREATE INDEX IF NOT EXISTS idx_assignments_updated ON assignments(updated_at DESC);
       CREATE INDEX IF NOT EXISTS idx_submissions_assignment ON submissions(assignment_id, status);
       CREATE INDEX IF NOT EXISTS idx_attempts_submission ON grading_attempts(submission_id, created_at DESC);
       CREATE UNIQUE INDEX IF NOT EXISTS idx_attempts_one_active
         ON grading_attempts(submission_id)
         WHERE status IN ('queued', 'running');
+      CREATE INDEX IF NOT EXISTS idx_teacher_reviews_submission
+        ON teacher_review_events(submission_id, created_at DESC);
     `)
 
     this.addColumnIfMissing('submissions', 'source_document_hash', 'TEXT')
@@ -871,14 +904,24 @@ export class AutoGraderDatabase {
   }
 
   exportScoreData(assignmentId: string, scope: SpreadsheetExportScope): SpreadsheetExportData {
+    const statusFilter = scope === 'approved'
+      ? "s.status = 'approved'"
+      : "s.status IN ('approved', 'draft_scored')"
+    return this.buildSpreadsheetData(assignmentId, statusFilter)
+  }
+
+  teacherReviewImportContext(assignmentId: string): SpreadsheetExportData {
+    return this.buildSpreadsheetData(
+      assignmentId,
+      "s.status IN ('approved', 'draft_scored', 'reviewed', 'extraction_problem')"
+    )
+  }
+
+  private buildSpreadsheetData(assignmentId: string, statusFilter: string): SpreadsheetExportData {
     const assignment = this.getAssignment(assignmentId)
     if (!assignment) throw new Error('Assignment not found.')
     const template = this.getTemplate(assignment.templateVersionId)
     if (!template) throw new Error('The assignment rubric could not be loaded.')
-
-    const statusFilter = scope === 'approved'
-      ? "s.status = 'approved'"
-      : "s.status IN ('approved', 'draft_scored')"
     const rows = this.db.prepare(`
       WITH latest_attempt AS (
         SELECT grading_attempts.*,
@@ -898,13 +941,17 @@ export class AutoGraderDatabase {
         FROM approved_results
       )
       SELECT
+        s.id AS submission_id,
         s.source_file_name, s.source_document_hash, s.question_key,
         s.student_index,
+        s.page_number,
+        s.page_end_number,
         s.student_id,
         s.student_name,
         s.grade,
         COALESCE(s.reviewed_text, s.raw_text, '') AS response_text,
         s.status,
+        CASE WHEN s.status = 'approved' THEN approval.grading_attempt_id ELSE attempt.id END AS grading_attempt_id,
         CASE WHEN s.status = 'approved' THEN approval.result_json ELSE attempt.result_json END AS result_json,
         CASE WHEN s.status = 'approved' THEN approved_attempt.model_name ELSE attempt.model_name END AS model_name,
         approval.approved_at
@@ -918,31 +965,44 @@ export class AutoGraderDatabase {
       WHERE s.assignment_id = ? AND ${statusFilter}
       ORDER BY s.source_file_name COLLATE NOCASE, s.student_index, s.student_name COLLATE NOCASE
     `).all(assignmentId) as Array<{
+      submission_id: string
       source_file_name: string
       source_document_hash: string
       question_key: string
       student_index: number
+      page_number: number | null
+      page_end_number: number | null
       student_id: string | null
       student_name: string | null
       grade: 6 | 7 | 8 | null
       response_text: string
       status: Submission['status']
+      grading_attempt_id: string | null
       result_json: string | null
       model_name: string | null
       approved_at: string | null
     }>
 
     return {
+      assignmentId: assignment.id,
       assignmentName: assignment.name,
       questions: assignmentQuestions(assignment),
       submissions: this.listSubmissions(assignmentId),
+      questionText: assignment.questionText,
+      templateVersionId: assignment.templateVersionId,
       templateName: assignment.templateName,
+      templateVersion: assignment.templateVersion,
       rubric: template.rubric,
       rows: rows.flatMap((row) => row.result_json ? [{
+        submissionId: row.submission_id,
+        gradingAttemptId: row.grading_attempt_id ?? '',
+        teacherName: teacherNameFromSourceFile(row.source_file_name),
         sourceFileName: row.source_file_name,
         sourceDocumentHash: row.source_document_hash,
         questionKey: row.question_key,
         studentIndex: row.student_index,
+        pageNumber: row.page_number,
+        pageEndNumber: row.page_end_number ?? row.page_number,
         studentId: row.student_id ?? '',
         studentName: row.student_name ?? '',
         grade: row.grade,
@@ -953,6 +1013,134 @@ export class AutoGraderDatabase {
         result: JSON.parse(row.result_json) as GradingResult
       }] : [])
     }
+  }
+
+  hasTeacherReviewImport(workbookHash: string): boolean {
+    return Boolean(this.db.prepare(
+      'SELECT 1 FROM teacher_review_imports WHERE workbook_hash = ? LIMIT 1'
+    ).get(workbookHash))
+  }
+
+  applyTeacherReviewImport(
+    preview: TeacherReviewImportPreview,
+    sourceFileName: string,
+    workbookHash: string
+  ): TeacherReviewImportCounts {
+    if (preview.issues.length || preview.counts.invalid || preview.counts.conflicts) {
+      throw new Error('The workbook contains validation issues and cannot be imported.')
+    }
+    const assignment = this.getAssignment(preview.assignmentId)
+    if (!assignment || assignment.templateVersionId !== preview.templateVersionId) {
+      throw new Error('The assignment or rubric version changed before the workbook could be imported.')
+    }
+    const template = this.getTemplate(assignment.templateVersionId)
+    if (!template) throw new Error('The assignment rubric could not be loaded.')
+
+    const context = this.teacherReviewImportContext(preview.assignmentId)
+    const sourceRows = new Map(context.rows.map((row) => [row.submissionId, row]))
+    const counts = { ...preview.counts }
+    const now = new Date().toISOString()
+
+    this.db.transaction(() => {
+      if (this.hasTeacherReviewImport(workbookHash)) {
+        throw new Error('This teacher review workbook has already been imported.')
+      }
+      const importId = randomUUID()
+      this.db.prepare(`
+        INSERT INTO teacher_review_imports (
+          id, assignment_id, source_file_name, workbook_hash, reviewed_row_count, imported_at
+        ) VALUES (?, ?, ?, ?, ?, ?)
+      `).run(importId, preview.assignmentId, sourceFileName, workbookHash, preview.rows.length, now)
+
+      for (const row of preview.rows) {
+        const source = sourceRows.get(row.submissionId)
+        if (!source || source.gradingAttemptId !== row.gradingAttemptId) {
+          throw new Error(`Row ${row.rowNumber} no longer matches the current grading attempt.`)
+        }
+        const fingerprint = createHash('sha256').update(JSON.stringify({
+          assignmentId: preview.assignmentId,
+          submissionId: row.submissionId,
+          gradingAttemptId: row.gradingAttemptId,
+          reviewerInitials: row.reviewerInitials,
+          decision: row.decision,
+          teacherNote: row.teacherNote,
+          criteria: row.criteria
+        })).digest('hex')
+        const alreadyApplied = this.db.prepare(
+          'SELECT 1 FROM teacher_review_events WHERE event_fingerprint = ? LIMIT 1'
+        ).get(fingerprint)
+        if (alreadyApplied) {
+          counts.duplicates += 1
+          continue
+        }
+
+        let teacherResult: GradingResult | null = null
+        if (row.decision === 'Accept AI' || row.decision === 'Corrected') {
+          const teacherScores = new Map(row.criteria.map((criterion) => [criterion.key, criterion]))
+          const rubricCriteria = new Map(template.rubric.criteria.map((criterion) => [criterion.key, criterion]))
+          const criteria = source.result.criteria.map((criterion) => {
+            const input = teacherScores.get(criterion.key)
+            if (!input) throw new Error(`Row ${row.rowNumber} is missing ${criterion.name}.`)
+            const changed = input.teacherScore !== input.aiScore
+            return {
+              ...criterion,
+              score: input.teacherScore,
+              comment: changed && input.reason
+                ? `${criterion.comment.trim()}${criterion.comment.trim() ? ' ' : ''}Teacher correction: ${input.reason}`
+                : criterion.comment
+            }
+          })
+          teacherResult = {
+            criteria,
+            totalScore: criteria.reduce((sum, criterion) =>
+              sum + (rubricCriteria.get(criterion.key)?.includedInTotal ? criterion.score : 0), 0),
+            maxTotalScore: source.result.maxTotalScore,
+            overallComment: row.teacherNote
+              ? `${source.result.overallComment.trim()}${source.result.overallComment.trim() ? ' ' : ''}Teacher note: ${row.teacherNote}`
+              : source.result.overallComment
+          }
+          const revision = Number((this.db.prepare(`
+            SELECT COALESCE(MAX(revision), 0) + 1 AS revision
+            FROM approved_results WHERE submission_id = ?
+          `).get(row.submissionId) as { revision: number }).revision)
+          this.db.prepare(`
+            INSERT INTO approved_results (
+              id, submission_id, grading_attempt_id, revision, result_json, reviewer_name, approved_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+          `).run(
+            randomUUID(), row.submissionId, row.gradingAttemptId, revision,
+            JSON.stringify(teacherResult), row.reviewerInitials, now
+          )
+          this.db.prepare(`
+            UPDATE submissions SET status = 'approved', issue_message = NULL, updated_at = ? WHERE id = ?
+          `).run(now, row.submissionId)
+        } else {
+          const status = row.decision === 'Extraction problem' ? 'extraction_problem' : 'reviewed'
+          const issue = `Teacher review: ${row.decision.toLowerCase()}.${row.teacherNote ? ` ${row.teacherNote}` : ''}`
+          this.db.prepare(`
+            UPDATE submissions SET status = ?, issue_message = ?, updated_at = ? WHERE id = ?
+          `).run(status, issue.slice(0, 1000), now, row.submissionId)
+        }
+
+        this.db.prepare(`
+          INSERT INTO teacher_review_events (
+            id, import_id, submission_id, grading_attempt_id, row_number, decision,
+            reviewer_name, teacher_note, criterion_feedback_json, ai_result_json,
+            teacher_result_json, event_fingerprint, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          randomUUID(), importId, row.submissionId, row.gradingAttemptId, row.rowNumber,
+          row.decision, row.reviewerInitials, row.teacherNote, JSON.stringify(row.criteria.map((criterion) => ({
+            ...criterion,
+            delta: criterion.teacherScore - criterion.aiScore
+          }))),
+          JSON.stringify(source.result), teacherResult ? JSON.stringify(teacherResult) : null,
+          fingerprint, now
+        )
+      }
+    })()
+
+    return counts
   }
 
   gradingQueueSummary(assignmentId: string): GradingQueueSummary {

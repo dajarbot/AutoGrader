@@ -27,7 +27,7 @@ The first vertical slice includes:
 - Queue progress, explicit retries, restart recovery, and fail-fast pausing for provider-level errors.
 - Calibration-first grading plus an explicit “Grade all” batch action; batches remain sequential, stop on provider-level errors, and can be stopped after the current request.
 - Editable criterion scores and comments with explicit approval before export.
-- Native Excel export with one row per student, full response text, criterion scores/comments, totals, feedback, source PDF, model, and review status.
+- Native Excel export with one row per student, teacher-name filtering, a teacher review sheet with validated correction fields, full response text, rubric-aware overall category, criterion score ranges, exact rubric-level descriptors, evidence-based justifications, totals, feedback, source PDF page range, model, and review status. TELPAS exports remain item scores and are never mislabeled as proficiency classifications.
 - Separate “approved only” and clearly labeled “all scored” exports so AI drafts cannot be confused with finalized grades.
 
 Large-stack workflow cleanup and batch-oriented navigation are the next milestones.

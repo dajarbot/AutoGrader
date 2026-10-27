@@ -7,6 +7,8 @@ import { AutoGraderDatabase } from '../src/main/database'
 import { TELPAS_RUBRIC_KEY, telpasRubric } from '../src/shared/telpasRubric'
 import { validateAndNormalizeResult } from '../src/main/grading'
 import { assessmentSummaryRows } from '../src/shared/assessmentExport'
+import ExcelJS from 'exceljs'
+import { parseTeacherReviewWorkbook } from '../src/main/teacherReviewImport'
 import { buildScoresWorkbook } from '../src/main/spreadsheetExport'
 import { createServer } from '../src/main/server'
 import type { ProviderStore } from '../src/main/providerStore'
@@ -68,8 +70,41 @@ describe.skipIf(!process.versions.electron)('two-question persistence, review, a
   const all=db.exportScoreData(assignment.id,'all_scored');const summary=assessmentSummaryRows(all)
   expect(summary.find(r=>r.studentId==='1234567')).toMatchObject({combinedTotal:18,completion:'Includes AI draft'})
   expect(summary.find(r=>r.studentId==='7654321')!.combinedTotal).toBeNull()
-  const workbook=buildScoresWorkbook(all);expect(workbook.worksheets[0]!.name).toBe('Student summary');expect(workbook.getWorksheet('Scores')!.rowCount).toBe(4)
+  const workbook=buildScoresWorkbook(all);expect(workbook.worksheets[0]!.name).toBe('Teacher Review');expect(workbook.getWorksheet('Student summary')).toBeDefined();expect(workbook.getWorksheet('Scores')!.rowCount).toBe(4)
   db.approveDraftScore(second.id,score(2));expect(assessmentSummaryRows(db.exportScoreData(assignment.id,'approved')).find(r=>r.studentId==='1234567')).toMatchObject({combinedTotal:15,completion:'Both approved'})
+ })
+ it('round-trips teacher corrections for Q2 without approving or overwriting Q1',async()=>{
+  const {assignment}=setup()
+  db.acceptCleanExtractions(assignment.id);db.enqueueAllReadySubmissions(assignment.id,'mistral:latest')
+  let item;while((item=db.claimNextGradingAttempt()))db.completeGradingAttempt(item.attemptId,score(3))
+  const data=db.exportScoreData(assignment.id,'all_scored')
+  const q1=data.rows.find(r=>r.studentId==='1234567'&&r.questionKey==='q1')!
+  const q2=data.rows.find(r=>r.studentId==='1234567'&&r.questionKey==='q2')!
+  expect(q1.submissionId).not.toBe(q2.submissionId)
+  const workbook=buildScoresWorkbook(data),sheet=workbook.getWorksheet('Teacher Review')!
+  const headers=sheet.getRow(1).values as string[]
+  expect(new Set(headers.filter(Boolean)).size).toBe(headers.filter(Boolean).length)
+  for(const [index,row] of data.rows.entries()){
+   const question=octoberQuestions.find(q=>q.key===row.questionKey)!
+   expect(sheet.getRow(index+2).getCell('questionText').value).toBe(question.prompt)
+   expect(sheet.getRow(index+2).getCell('question').value).toBe(question.title)
+  }
+  const reviewRow=sheet.getRow(data.rows.indexOf(q2)+2)
+  reviewRow.getCell('reviewDecision').value='Corrected'
+  reviewRow.getCell('reviewerInitials').value='TE'
+  reviewRow.getCell('teacher_vocabulary').value=4
+  reviewRow.getCell('reason_vocabulary').value='Too strict'
+  const reopened=new ExcelJS.Workbook();await reopened.xlsx.load(await workbook.xlsx.writeBuffer())
+  const preview=parseTeacherReviewWorkbook(reopened,assignment.id,db.teacherReviewImportContext(assignment.id))
+  expect(preview.issues).toEqual([]);expect(preview.counts.corrected).toBe(1);expect(preview.counts.untouched).toBe(2)
+  db.applyTeacherReviewImport(preview,'review.xlsx','two-question-round-trip')
+  expect(db.getSubmission(q1.submissionId)!.status).toBe('draft_scored')
+  expect(db.getSubmission(q2.submissionId)!.status).toBe('approved')
+  const exported=db.exportScoreData(assignment.id,'all_scored')
+  expect(exported.rows.find(r=>r.submissionId===q1.submissionId)!.result.totalScore).toBe(9)
+  expect(exported.rows.find(r=>r.submissionId===q2.submissionId)!.result.totalScore).toBe(10)
+  expect(assessmentSummaryRows(exported).find(r=>r.studentId==='1234567')).toMatchObject({combinedTotal:19,completion:'Includes AI draft'})
+  expect(assessmentSummaryRows(db.exportScoreData(assignment.id,'approved')).find(r=>r.studentId==='1234567')!.combinedTotal).toBeNull()
  })
  it('copies question snapshots and answer keys into new rubric runs without changing earlier approvals',()=>{
   const {assignment,template}=setup();db.acceptCleanExtractions(assignment.id);db.enqueueReadySubmissions(assignment.id,'mistral:latest');const item=db.claimNextGradingAttempt()!;db.completeGradingAttempt(item.attemptId,score(3));db.approveDraftScore(item.submissionId,score(3))
